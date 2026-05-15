@@ -1,0 +1,6 @@
+{
+  "name": "jameskill",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Notion issue tracker integration for Claude Code — report, resolve, and manage issues directly from your terminal"
+}
