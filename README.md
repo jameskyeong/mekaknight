@@ -35,7 +35,7 @@ Structured development workflow that orchestrates multiple skills into a complet
 ## Installation
 
 ```bash
-claude plugins marketplace add https://github.com/jameskyeong/jameskill-marketplace.git
+claude plugins marketplace add https://github.com/jameskyeong/jameskill.git
 claude plugins install jameskill
 ```
 

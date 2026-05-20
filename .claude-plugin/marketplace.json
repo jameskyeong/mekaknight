@@ -4,6 +4,10 @@
     "name": "James Kyeong",
     "email": "jkyuk@i-screammedia.com"
   },
+  "metadata": {
+    "description": "Developer productivity skills by James Kyeong",
+    "version": "1.2.0"
+  },
   "plugins": [
     {
       "name": "jameskill",
@@ -11,8 +15,9 @@
         "source": "url",
         "url": "https://github.com/jameskyeong/jameskill.git"
       },
-      "description": "Notion issue tracker skills for Claude Code — report, resolve, and manage issues directly from your terminal",
-      "version": "1.0.0"
+      "description": "Developer productivity skills for Claude Code — issue tracking, structured workflows, and more",
+      "version": "1.2.0",
+      "strict": true
     }
   ]
 }
