@@ -156,7 +156,7 @@ Present query results in this format. Merge "pending" and "waiting" issues into 
 3. [P1] Drawing response delay (대기 중)
 4. [P2] Drawing UI improvement (대기 중)
 
-Which issue to work on? (number or "all")
+Which issue to work on? (number, comma-separated, range, or "all")
 ```
 
 Rules:
@@ -167,11 +167,58 @@ Rules:
 
 ---
 
-## Step 5: User selection -> Status change
+## Step 5: User selection → Grouping → Status change
 
-When the user picks a number, change that issue's status to **In Progress**.
+### 5a. Parse selection
 
-**Important: Change status before brainstorming begins.** This way, if the session is interrupted, the issue naturally stays "In Progress" and will appear in the ⏳ section on the next resolve call.
+Accept these selection formats:
+- **Single**: `3`
+- **Comma-separated**: `1,3,5`
+- **Range**: `5-7`
+- **Mixed**: `1,3,5-7`
+- **"all"**: all pending issues
+- **Status filter**: `대기중 이슈`, `시작 전 이슈` — select all issues with that status
+
+### 5b. Propose groups (multi-issue only)
+
+When 2+ issues are selected, **propose groupings** based on title/body similarity before starting work.
+
+Analyze the selected issues and cluster by domain affinity:
+- Same UI area (e.g. drawing tools, puzzle, activity review)
+- Same technical system (e.g. video recording, canvas rendering)
+- Same type of fix (e.g. copy/text changes, sizing adjustments)
+
+Present proposed groups sorted by max severity within each group:
+
+```
+선택된 이슈 N건을 다음과 같이 묶어서 작업하겠습니다:
+
+🔧 그룹 1 — 드로잉 도구 (P1)
+  • [P1] 드로잉 시 지우개 버벅임
+  • [P1] 채색영역이 드로잉툴에 가려지지 않도록 수정 필요
+  • [P2] 그리기 색상 팔레트 과다
+
+🔧 그룹 2 — 활동리뷰 (P1)
+  • [P1] 활동리뷰 화면 스크롤 잘 안보임
+  • [P1] 활동리뷰 팝업 닫기버튼 터치 어려움
+
+🔧 그룹 3 — 영상 관련 (P1)
+  • [P1] 앙리루소의 꿈 영상 저장 안됨
+  • [P1] 활동 영상에 지우개 사용한 부분 반영되지 않음
+
+🔧 그룹 4 — 단발 수정
+  • [P1] 오늘 마무리 문구 수정
+
+이대로 진행할까요? (수정하려면 그룹 변경 사항을 말씀해주세요)
+```
+
+Wait for user confirmation or adjustment. If only 1 issue is selected, skip grouping and proceed directly.
+
+### 5c. Change status
+
+For each issue in the current group (or single issue), change status to **In Progress** before starting work.
+
+**Important: Change status before brainstorming begins.** This way, if the session is interrupted, issues naturally stay "In Progress" and will appear in the ⏳ section on the next resolve call.
 
 ```bash
 curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
@@ -183,9 +230,11 @@ curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
 
 ---
 
-## Step 6: Fetch issue body + Workflow
+## Step 6: Fetch issue bodies + Workflow
 
-Retrieve the selected issue's body (block children) and pass it to the workflow skill.
+### 6a. Fetch all issue bodies in the group
+
+For each issue in the current group, retrieve block children:
 
 ```bash
 curl -s "https://api.notion.com/v1/blocks/${PAGE_ID}/children?page_size=100" \
@@ -195,14 +244,27 @@ curl -s "https://api.notion.com/v1/blocks/${PAGE_ID}/children?page_size=100" \
 
 Extract `rich_text[].plain_text` from each block in `.results[]` to compose the issue body text.
 
-Then invoke the `jameskill:workflow` skill with:
-- **First line of the prompt**: Issue title
-- **Subsequent lines**: Issue body (text extracted from block children)
+### 6b. Invoke workflow
 
+**Single issue** — invoke `jameskill:workflow` with:
 ```
 [Issue title]
 
 [Issue body — text from block children]
+```
+
+**Grouped issues (2+)** — invoke `jameskill:workflow` once for the entire group with a structured multi-issue prompt:
+```
+다음은 함께 검토할 N개의 관련 이슈입니다.
+
+## 이슈 1: [P1] 드로잉 시 지우개 버벅임 (page_id: xxx)
+[본문]
+
+## 이슈 2: [P1] 채색영역이 드로잉툴에 가려지지 않도록 수정 필요 (page_id: yyy)
+[본문]
+
+Phase 0/1(grill-me + grill-with-docs)에서 묶음 전체의 공통 컨텍스트를 도출하되,
+Phase 3(build)에서는 이슈별로 누락 없이 모두 처리하세요.
 ```
 
 The workflow skill handles the full cycle: clarify (grill-me) → validate (grill-with-docs) → route (diagnose/prototype/to-prd+to-issues/direct) → build (tdd) → architecture review → code review → verify.
@@ -213,13 +275,13 @@ Once the workflow completes and the user confirms "done", proceed to Step 7.
 
 ---
 
-## Step 7: Completion
+## Step 7: Group completion
 
-When brainstorming and implementation are both done and the user confirms "done":
+When brainstorming and implementation for a group are done and the user confirms "done":
 
-### 7a. Write implementation memo
+### 7a. Write implementation memo (per issue)
 
-If there is anything worth noting from the implementation, write a brief memo in the reason (rich_text) field. Use **plain language accessible to non-developers**, covering only the relevant items below in 2-3 lines:
+For **each issue in the group**, write an individual memo in the reason (rich_text) field describing what changed for that specific issue. Use **plain language accessible to non-developers**, covering only the relevant items below in 2-3 lines:
 
 - **What changed** (what part was modified and how)
 - **Any difficulties encountered** (unexpected constraints or surprises)
@@ -228,7 +290,7 @@ If there is anything worth noting from the implementation, write a brief memo in
 
 Avoid code names, function names, and technical jargon. Use expressions like "Made the button bigger", "Improved response speed when pressed".
 
-Skip if there is nothing worth noting.
+Skip if there is nothing worth noting for a particular issue.
 
 **If `REASON_PROP` is empty or the property does not exist in the DB, skip the memo entirely.**
 
@@ -248,9 +310,9 @@ curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
   -d '{"properties": {"'"$REASON_PROP"'": {"rich_text": [{"text": {"content": "'"$NEW_REASON"'"}}]}}}'
 ```
 
-### 7b. Status change
+### 7b. Status change (all issues in the group)
 
-Change the status to **Ready to Deploy**.
+Change the status to **Ready to Deploy** for every issue in the group.
 
 ```bash
 curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
@@ -260,27 +322,20 @@ curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
   -d '{"properties": {"'"$STATUS_PROP"'": {"select": {"name": "'"$DEPLOY_STATUS"'"}}}}'
 ```
 
-Notify the user upon completion:
+Notify the user upon completion with a per-issue summary:
 ```
-[P1] Guide UX improvement -> Ready to Deploy
-  📝 Implementation memo: Made the close button bigger and added tap-outside-to-dismiss. Adjusted the dismiss animation to avoid overlap with the existing close effect.
+✅ 그룹 1 — 드로잉 도구 완료
+  [P1] 드로잉 시 지우개 버벅임 -> 배포 예정
+    📝 지우개 사용 시 불필요한 재연산을 줄여 반응 속도 개선
+  [P1] 채색영역이 드로잉툴에 가려지지 않도록 수정 -> 배포 예정
+    📝 채색 영역이 도구 패널 뒤에 숨지 않도록 레이어 순서 조정
 ```
 
----
+### 7c. Next group
 
-## "All" selection handling
+If there are remaining groups, proceed to the next group (back to Step 5c → Step 6 → Step 7). Process groups **sequentially in severity order** (by max severity within each group).
 
-When the user selects "all", process issues **sequentially in severity order (P0 -> P1 -> P2 -> P3)**, one at a time.
-
-Processing order:
-1. Change issue N's status to "In Progress"
-2. Fetch issue N's body
-3. Invoke `jameskill:workflow` (or standard brainstorming if unavailable)
-4. After workflow completes, get user's "done" confirmation
-5. Change issue N's status to "Ready to Deploy"
-6. **Only after issue N is fully complete**, move to issue N+1
-
-**Each issue's brainstorming and implementation must be fully complete before moving to the next.** Do not process in parallel.
+**Each group's workflow must be fully complete before moving to the next.** Do not process groups in parallel.
 
 ---
 
