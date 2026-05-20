@@ -2,8 +2,8 @@
 name: jameskill:workflow
 description: >-
   Matt Pocock skill orchestrator — from problem understanding to verified implementation.
-  Chains grill-with-docs, tdd, diagnose, prototype, to-prd, to-issues, improve-codebase-architecture,
-  and review based on context. Use when: 'workflow', 'start working on', 'implement this',
+  Chains grill-with-docs, tdd, diagnose, prototype, to-prd, to-issues, and improve-codebase-architecture
+  based on context. Use when: 'workflow', 'start working on', 'implement this',
   'fix this', 'build this'. Also invoked by tracking-issue-resolve after issue selection.
 ---
 
@@ -13,45 +13,33 @@ Orchestrates Matt Pocock skills into a complete development flow: understand the
 
 **Compound engineering guarantee:** Every workflow run improves domain docs, test coverage, and codebase structure — not just the immediate deliverable.
 
-**Hard requirement:** This workflow requires Matt Pocock skills to be installed at user-level (`~/.claude/skills/`) or project-level (`.claude/skills/`). Phase -1 verifies this and **halts the workflow** if any required skill is missing. There is no fallback path — if a required skill cannot be invoked, the workflow stops.
+**Hard requirement:** This workflow requires Matt Pocock skills to be available in the current session (via plugin, user-level, or project-level installation). Phase -1 verifies this and **halts the workflow** if any required skill is missing. There is no fallback path — if a required skill cannot be invoked, the workflow stops.
 
 ---
 
 ## Phase -1: Preflight — Verify Matt Pocock skills
 
-**Goal:** Confirm every required Matt Pocock skill is installed before doing anything else.
+**Goal:** Confirm every required Matt Pocock skill is available before doing anything else.
 
-Run this Bash command immediately when the workflow starts:
+Check whether the following skills are available in the current session by verifying each appears in the system context's available skill list:
 
-```bash
-required=(grill-me grill-with-docs diagnose prototype to-prd to-issues tdd improve-codebase-architecture)
-missing=()
-for s in "${required[@]}"; do
-  if [ ! -f "$HOME/.claude/skills/$s/SKILL.md" ] && [ ! -f ".claude/skills/$s/SKILL.md" ]; then
-    missing+=("$s")
-  fi
-done
-if [ ${#missing[@]} -gt 0 ]; then
-  echo "MISSING: ${missing[*]}"
-  exit 1
-fi
-echo "OK"
-```
+- `grill-me`, `grill-with-docs`, `diagnose`, `prototype`, `to-prd`, `to-issues`, `tdd`, `improve-codebase-architecture`
 
-**If the output is `MISSING: ...` or the command exits non-zero, STOP IMMEDIATELY.** Do not proceed to any other phase. Report to the user:
+Skills may be installed as plugins, in `~/.claude/skills/`, or in `.claude/skills/` — the installation method does not matter. What matters is that each skill can be invoked via the Skill tool.
+
+**If any required skill is missing, STOP IMMEDIATELY.** Do not proceed to any other phase. Report to the user:
 
 > Matt Pocock 스킬이 설치되지 않아 workflow를 진행할 수 없습니다.
 >
 > **누락된 스킬:** [누락 목록]
 >
 > **설치 방법:**
-> - user-level (`~/.claude/skills/`) 또는 project-level (`.claude/skills/`)에 다음 스킬들이 모두 있어야 합니다:
->   `grill-me`, `grill-with-docs`, `diagnose`, `prototype`, `to-prd`, `to-issues`, `tdd`, `improve-codebase-architecture`
-> - `setup-matt-pocock-skills` 스킬을 실행하거나 공식 출처에서 직접 설치해주세요.
+> - Matt Pocock 스킬 플러그인을 설치하거나, `/mattpocock-skills:setup-matt-pocock-skills`를 실행해주세요.
+> - 공식 레포: [mattpocock/skills](https://github.com/mattpocock/skills)
 >
 > 설치 완료 후 `/jameskill:workflow`를 다시 실행해주세요.
 
-Proceed to Phase 0 only when the command outputs `OK`.
+Proceed to Phase 0 only when all required skills are confirmed available.
 
 ---
 
@@ -177,42 +165,33 @@ Review results and act:
 
 **Goal:** Two-axis code review before declaring done. Standards and Spec are reviewed independently so one axis cannot mask the other.
 
-This phase is self-contained — it does not invoke a Matt Pocock skill, but spawns sub-agents directly.
+> **Note:** Matt Pocock의 `review` 스킬이 현재 `in-progress` 상태로 개발 중입니다. 해당 스킬이 stable (`skills/engineering/`)로 승격되면, 이 Phase를 Skill 호출로 전환하세요. 그때까지는 아래 인라인 프로세스를 따릅니다.
 
 ### 4.1: Determine the diff
 
-Capture the diff from the commit/branch where work started:
-
-```bash
-git diff <start-point>...HEAD
-git log <start-point>..HEAD --oneline
-```
-
-The start point is the commit before Phase 3 began (or before Route A's diagnose began).
+Capture the changes made since this workflow started. Compare the current state against the commit where Phase 3 (or Route A's diagnose) began, using the merge-base comparison. Also note the commit list for context.
 
 ### 4.2: Collect review sources
 
-**Standards sources** — documents that define how code should be written:
-- `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`
-- `CONTEXT.md`, per-module `CONTEXT.md` files
-- `docs/adr/` (architectural decisions are standards)
-- Linter/formatter configs (`biome.json`, `eslint.config.*`, `tsconfig.json`) — note them but don't re-check what tooling already enforces
+**Standards sources** — any project documents that define how code should be written:
+- Project instruction files (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`)
+- Domain documentation (`CONTEXT.md`, per-module context files)
+- Architectural decisions (`docs/adr/`)
+- Machine-enforced standards (linter/formatter configs) — note them but don't re-check what tooling already enforces
 
 **Spec source** — what was agreed to build:
 - The problem statement from Phase 0-1 (grill-me + grill-with-docs output)
 - If invoked from tracking-issue-resolve: the original issue title + body
-- Issue references in commit messages (`#123`, `Closes #45`)
+- Issue references in commit messages
 - PRD from Route C if applicable
 
 ### 4.3: Run two reviews in parallel sub-agents
 
 Spawn two `general-purpose` sub-agents simultaneously. They must not share context.
 
-**Standards sub-agent prompt:**
-> Read the standards docs: [list of files from 4.2]. Then read the diff: `git diff <start-point>...HEAD`. Report — per file/hunk where relevant — every place the diff violates a documented standard. Cite the standard (file + the rule). Distinguish hard violations from judgement calls. Skip anything tooling already enforces. Under 400 words.
+**Standards sub-agent:** Read the standards docs found in 4.2, then read the diff. Report every place the diff violates a documented standard. Cite the standard (file + the rule). Distinguish hard violations from judgement calls. Skip anything tooling enforces. Under 400 words.
 
-**Spec sub-agent prompt:**
-> Read the spec: [spec content from 4.2]. Then read the diff: `git diff <start-point>...HEAD`. Report: (a) requirements the spec asked for that are missing or partial; (b) behavior in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words.
+**Spec sub-agent:** Read the spec from 4.2, then read the diff. Report: (a) requirements the spec asked for that are missing or partial; (b) behavior in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words.
 
 ### 4.4: Aggregate and act
 
@@ -232,15 +211,15 @@ Present the two reports under `## Standards` and `## Spec` headings. Do **not** 
 
 **Goal:** Mechanical verification that nothing is broken.
 
-Run the project's verification commands. Detect from project config which commands are available:
+Run the project's verification suite. Detect which checks are available from the project configuration and run them all:
 
-- **Type checking** (e.g. `tsc --noEmit`, `pnpm typecheck`)
-- **Tests** (e.g. `vitest`, `jest`, `pnpm test`)
-- **Lint/format** (e.g. `biome check`, `eslint`, `pnpm check`)
+- **Type checking** — ensure the codebase compiles without type errors
+- **Tests** — run the full test suite (or the relevant subset if the project is large)
+- **Lint/format** — verify code style and formatting rules pass
 
-If the project has a top-level script that runs all checks (e.g. `pnpm check`, `npm run ci`), prefer that.
+If the project has a single command that runs all checks, prefer that over running individual tools.
 
-If any command fails, fix the issue and re-run from Phase 5 (do not re-run earlier phases unless the fix is substantial).
+If any check fails, fix the issue and re-run from Phase 5 (do not re-run earlier phases unless the fix is substantial).
 
 **Output:** All checks green. Work is complete.
 
