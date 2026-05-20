@@ -2,5 +2,5 @@
   "name": "jameskill",
   "version": "1.1.0",
   "type": "module",
-  "description": "Notion issue tracker integration for Claude Code — report, resolve, and manage issues directly from your terminal"
+  "description": "Notion issue tracking + Matt Pocock skill orchestrator for Claude Code — report, resolve, and implement with a structured development workflow"
 }
