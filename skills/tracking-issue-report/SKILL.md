@@ -107,6 +107,15 @@ Codebase verification results:
 
 After showing verification results, **proceed directly to registration without confirmation**. Only skip already-resolved issues (DONE). Valid and cannot-verify issues are registered immediately.
 
+### Post-implementation Registration
+
+When the user explicitly states work is already completed (e.g., "이미 구현 완료", "배포 예정으로 변경해줘"), this is a **retroactive log** — not a bug report. In this case:
+
+1. **Codebase verification** still runs, but classifies as **Valid** (confirmed by the diff in the working tree)
+2. **Title** must still follow Section 5 Title Writing Rules — describe the **original problem/need** that was solved, not the solution itself
+3. **Status** can be set directly to the requested value (e.g., "배포 예정") in the same POST that creates the page
+4. **Reason (`$REASON_PROP`)** should contain an `[구현 메모]` prefix with a plain-language summary of what changed
+
 ---
 
 ## 3. DB Selection Rules
@@ -170,13 +179,32 @@ Extract the following properties from the prompt:
 
 | Property | Extraction Rule | When Not Specified |
 |---|---|---|
-| Title | Summarize the issue core in one line | Required — must be derived from prompt |
+| Title | See **Title Writing Rules** below | Required — must be derived from prompt |
 | Severity (`$SEVERITY_PROP`) | Search for P0, P1, P2, P3 keywords | Empty (unset in Notion) |
 | Tags (`$TAGS_PROP`) | Search for `#tagname` or `[tag]` format | Empty |
 | Related module | Extract technical module names from text | Record in body |
 | App/Screen | Extract "user app", "manager", screen names | Record in body |
 | Assignee (`$ASSIGNEE_PROP`) | Use `defaults.assigneeId` from config | Omit if empty |
 | Status (`$STATUS_PROP`) | **Do NOT set** (use Notion DB default) | — |
+
+### Title Writing Rules
+
+**MANDATORY.** Every title MUST follow these rules. Violations are treated as errors.
+
+1. **Write as a user-visible problem or improvement** — not a commit message, not a technical changelog. The title should read like something a non-developer stakeholder would write.
+2. **Max 30 characters (Korean) / 50 characters (English).** If longer, rewrite.
+3. **No technical jargon** — no file names, component names, CSS values, function names, or framework terms.
+4. **No prefixes** — no `feat:`, `fix:`, `refactor:`, severity tags, or category markers.
+5. **No compound titles** — if the title has `+`, `및`, `—`, or `·` joining two unrelated topics, split into separate issues instead.
+
+| Bad (reject) | Good |
+|---|---|
+| `feat(user): 드로잉 도구 그룹 1 — 팔레트 통합, 캔버스 갭, 지우개 프리뷰` | `색상 팔레트가 너무 많아 전환이 어려움` |
+| `활동 화면 UI 개선 — 버튼 통일 + 완료 애니메이션 + 팔레트 기본 열림` | `활동 화면 버튼 크기와 스타일이 제각각` |
+| `스티커 캔버스 비율 수정 + 영상 미리보기 레터박스 해결` | `어항 꾸미기에서 도안이 가로로 늘어남` |
+| `활동 결과 화면 UX 개선 및 캔버스 비율 수정` | `결과 화면에서 다음 행동을 찾기 어려움` |
+
+**Self-check before POST:** Re-read the title. If it sounds like a git commit, a PR title, or a release note — rewrite it as a problem statement that a field instructor would say.
 
 ---
 
@@ -246,6 +274,8 @@ DB schema validation failed:
 
 ## 8. Template Structure Lookup
 
+**MANDATORY when `templatePageId` is configured.** Skipping template replication is an error, not an optimization.
+
 If `templatePageId` is set in config, fetch the page's block structure and replicate it in the same order.
 
 ```bash
@@ -256,8 +286,7 @@ if [ -n "$TARGET_TEMPLATE" ]; then
 fi
 ```
 
-Replicate each block's `type` and structure (rich_text, icon, color, etc.) exactly.
-Fill text content with issue-specific information.
+Replicate **every** block's `type` and structure (rich_text, icon, color, etc.) exactly as fetched. Fill text content with issue-specific information. Sections that don't apply should have their content left empty — **never omit the section itself**.
 
 **If templatePageId is not set**: Do not create body blocks (set page properties only). This is normal behavior, not an error.
 
