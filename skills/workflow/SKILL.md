@@ -54,10 +54,22 @@ Proceed to Phase 0 only when all required skills are confirmed available.
 - If invoked standalone, use whatever the user provided
 
 **Skip conditions:**
-- The user explicitly says "skip clarify" or "requirements are clear"
-- The input is already a detailed spec with no ambiguity
+- 사용자가 명시적으로 "skip clarify", "요구사항 확실해", "브레인스토밍 스킵" 등을 요청한 경우만 허용
+- 에이전트가 자체적으로 "충분하다"고 판단하여 스킵하는 것은 금지
 
 **Output:** A clear, agreed-upon problem statement.
+
+### Phase 0 exit gate: 모호성 제거 검증
+
+grill-me 완료 후, Phase 1로 넘어가기 전에 반드시 아래 체크리스트를 수행한다.
+
+1. **남은 모호성을 명시적으로 나열한다:**
+   - 미결정 사항 (선택지가 열려있는 항목)
+   - 범위가 불명확한 항목 (어디까지 해야 하는지 불분명)
+   - 암묵적 가정 (명시적으로 확인되지 않은 전제)
+   - 용어 혼동 가능성 (같은 단어가 다른 의미로 쓰일 수 있는 경우)
+2. **나열된 항목이 1개 이상이면** — 사용자에게 보여주고, 각 항목이 해소될 때까지 grill-me를 계속한다. 모든 항목이 해소되면 다시 1번으로 돌아가 재검증한다.
+3. **나열된 항목이 0개가 되어야** Phase 1로 진입한다.
 
 ---
 
@@ -74,6 +86,19 @@ Proceed to Phase 0 only when all required skills are confirmed available.
 **Compound effect:** Domain documentation gets refined every run.
 
 **Output:** A validated implementation direction with updated docs.
+
+### Phase 1 exit gate: CONTEXT.md 보장
+
+grill-with-docs 완료 후, Phase 2로 넘어가기 전에 반드시 아래 체크리스트를 수행한다.
+
+1. **CONTEXT.md 존재 확인** — 프로젝트 루트에 `CONTEXT.md`(또는 `CONTEXT-MAP.md`)가 있는지 확인한다. 있으면 이 게이트를 통과한다.
+2. **없으면, Phase 1에서 다룬 도메인 항목을 명시적으로 나열한다:**
+   - 도메인 용어 (프로젝트 고유 개념, 일반 프로그래밍 용어 제외)
+   - 용어 간 관계
+   - 해소된 모호성
+   - ADR로 기록할 만한 결정
+3. **나열된 항목이 1개 이상이면** — grill-with-docs의 [CONTEXT-FORMAT.md](mdc:mattpocock-skills/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md) 형식에 맞춰 `CONTEXT.md`를 작성한다. 작성 후 어떤 항목을 넣었는지 사용자에게 보고한다.
+4. **나열된 항목이 0개면** — 도메인 컨텍스트가 발생하지 않았음을 사용자에게 보고하고, CONTEXT.md 없이 Phase 2로 진입한다.
 
 ---
 
