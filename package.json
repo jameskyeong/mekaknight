@@ -1,6 +1,6 @@
 {
   "name": "jameskill",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Developer productivity skills for Claude Code — issue tracking, structured workflows, and more",
   "scripts": {
     "version": "node scripts/sync-version.mjs && git add .claude-plugin/marketplace.json"
