@@ -6,7 +6,7 @@
 # (zsh의 builtin echo가 변수 내부 `\n` escape를 raw newline으로 변환하는 문제 회피)
 #
 # 사용 예:
-#   source ../tracking-issue-references/issue-builder.sh
+#   source ../issue-references/issue-builder.sh
 #   create_issue /tmp/issue1.json
 #
 # 입력 JSON 스키마:

@@ -9,10 +9,10 @@ description: >-
 # Issue Report (report-issue)
 
 Report issues from a prompt to a Notion DB.
-Reference docs are in the `../tracking-issue-references/` folder:
-- `../tracking-issue-references/config-schema.md` — Config file structure
-- `../tracking-issue-references/required-db-schema.md` — Required DB properties
-- `../tracking-issue-references/notion-api-patterns.md` — curl patterns
+Reference docs are in the `../issue-references/` folder:
+- `../issue-references/config-schema.md` — Config file structure
+- `../issue-references/required-db-schema.md` — Required DB properties
+- `../issue-references/notion-api-patterns.md` — curl patterns
 
 ---
 
@@ -343,14 +343,14 @@ If the source property does not exist in the DB but source information is availa
 
 ## 9. Parallel Creation
 
-> **Use the bundled helper.** `../tracking-issue-references/issue-builder.sh` exposes a validated `create_issue <input.json>` function that does POST + PATCH with proper shell-escape handling. Prefer the helper over hand-writing curl calls per session.
+> **Use the bundled helper.** `../issue-references/issue-builder.sh` exposes a validated `create_issue <input.json>` function that does POST + PATCH with proper shell-escape handling. Prefer the helper over hand-writing curl calls per session.
 >
 > ```bash
 > # Required env vars (export before sourcing):
 > #   NOTION_KEY, ISSUE_DB_ID, ASSIGNEE_ID,
 > #   TITLE_PROP, SEVERITY_PROP, TAGS_PROP, ASSIGNEE_PROP, SOURCE_PROP, NOTION_SOURCE
 >
-> source ../tracking-issue-references/issue-builder.sh
+> source ../issue-references/issue-builder.sh
 > create_issue /tmp/issue1.json   # see helper file for input JSON schema
 > ```
 >

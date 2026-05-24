@@ -1,10 +1,11 @@
 ---
 name: jameskill:workflow
 description: >-
-  Matt Pocock skill orchestrator — from problem understanding to verified implementation.
-  Chains grill-with-docs, tdd, diagnose, prototype, to-prd, to-issues, and improve-codebase-architecture
-  based on context. Use when: 'workflow', 'start working on', 'implement this',
-  'fix this', 'build this'. Also invoked by resolve-issue after issue selection.
+  Matt Pocock skill orchestrator with Notion-integrated issue tracking.
+  Chains grill-me, grill-with-docs, diagnose, prototype, tdd, and improve-codebase-architecture
+  for problem understanding and implementation. Large features split into vertical-slice
+  Notion issues via jameskill:report-issue. Use when: 'workflow', 'start working on',
+  'implement this', 'fix this', 'build this'. Also invoked by resolve-issue after issue selection.
 ---
 
 # Workflow — Matt Pocock Skill Orchestrator
@@ -17,25 +18,29 @@ Orchestrates Matt Pocock skills into a complete development flow: understand the
 
 ---
 
-## Phase -1: Preflight — Verify Matt Pocock skills
+## Phase -1: Preflight — Verify required skills
 
-**Goal:** Confirm every required Matt Pocock skill is available before doing anything else.
+**Goal:** Confirm every required skill is available before doing anything else.
 
 Check whether the following skills are available in the current session by verifying each appears in the system context's available skill list:
 
-- `grill-me`, `grill-with-docs`, `diagnose`, `prototype`, `to-prd`, `to-issues`, `tdd`, `improve-codebase-architecture`
+**Matt Pocock skills:**
+- `grill-me`, `grill-with-docs`, `diagnose`, `prototype`, `tdd`, `improve-codebase-architecture`
+
+**jameskill skills** (required only if Route C is taken — preflight verifies upfront for safety):
+- `jameskill:report-issue`
 
 Skills may be installed as plugins, in `~/.claude/skills/`, or in `.claude/skills/` — the installation method does not matter. What matters is that each skill can be invoked via the Skill tool.
 
 **If any required skill is missing, STOP IMMEDIATELY.** Do not proceed to any other phase. Report to the user:
 
-> Cannot run the workflow — required Matt Pocock skills are not installed.
+> Cannot run the workflow — required skills are not installed.
 >
 > **Missing skills:** [missing list]
 >
 > **How to install:**
-> - Install the Matt Pocock skills plugin, or run `/mattpocock-skills:setup-matt-pocock-skills`.
-> - Official repo: [mattpocock/skills](https://github.com/mattpocock/skills)
+> - Matt Pocock skills: see [mattpocock/skills](https://github.com/mattpocock/skills) for installation instructions.
+> - jameskill skills: install the `jameskill` plugin via the jameskill marketplace.
 >
 > Re-run `/jameskill:workflow` after installation completes.
 
@@ -97,7 +102,7 @@ After grill-with-docs completes, run this checklist before proceeding to Phase 2
    - Relationships between terms
    - Ambiguities that were resolved
    - Decisions worth recording as an ADR
-3. **If 1+ items are listed** — write `CONTEXT.md` following the [CONTEXT-FORMAT.md](mdc:mattpocock-skills/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md) format from grill-with-docs. After writing, report which items were included.
+3. **If 1+ items are listed** — write `CONTEXT.md` following the `CONTEXT-FORMAT.md` format from the grill-with-docs skill (located at `~/.claude/skills/grill-with-docs/` or wherever the Matt Pocock skills are installed). After writing, report which items were included.
 4. **If 0 items are listed** — report to the user that no domain context surfaced, and proceed to Phase 2 without creating CONTEXT.md.
 
 ---
@@ -130,15 +135,87 @@ After diagnose completes, proceed to **Phase 3.5** (skip Phase 3 — diagnose al
 
 After the user picks a direction from the prototype, proceed to **Phase 3**.
 
-### Route C: Large feature → `to-prd` → `to-issues`
+### Route C: Large feature → PRD + vertical-slice Notion issues
 
 **Signal:** Phase 1 output contains 3+ distinct tasks, spans multiple modules, or would take multiple sessions.
 
-1. **MUST invoke `to-prd` via the Skill tool** to formalize the requirements into a PRD. If invocation fails or the skill is unavailable, STOP and report — do NOT proceed manually.
-2. **MUST invoke `to-issues` via the Skill tool** to break the PRD into vertical-slice issues. If invocation fails or the skill is unavailable, STOP and report — do NOT proceed manually.
-3. Present the issue list to the user
-4. Inform the user they can register issues via `/jameskill:report-issue` and work each one via `/jameskill:workflow` individually
-5. **Stop here** — do not attempt to implement all issues in one run
+This route formalises requirements into a PRD that lives in the codebase, then breaks it into vertical-slice issues that get registered in Notion via `jameskill:report-issue`. No matt-tracker calls — Notion is the single source of truth.
+
+#### C.1: Write the PRD
+
+Save to `docs/prd/YYYY-MM-DD-<feature-slug>.md` using this template (adapted from matt's `to-prd`):
+
+```markdown
+# <Feature Name> PRD
+
+## Problem Statement
+The problem from the user's perspective.
+
+## Solution
+The solution from the user's perspective.
+
+## User Stories
+1. As a <actor>, I want <feature>, so that <benefit>
+... (extensive numbered list covering every aspect)
+
+## Implementation Decisions
+- Modules to build/modify and their interfaces
+- Schema changes, API contracts, architectural decisions
+- Do NOT include specific file paths or code snippets (they go stale fast).
+- Exception: snippets from a Route B prototype that encode a decision more precisely than prose (state machine, reducer, schema, type shape) — inline trimmed and note the prototype origin.
+
+## Testing Decisions
+- What makes a good test (test external behavior, not implementation details)
+- Which modules to test
+- Prior art for the tests (similar tests already in the codebase)
+
+## Out of Scope
+Things deliberately excluded from this PRD.
+```
+
+Use the project's domain glossary from `CONTEXT.md` throughout. Respect any ADRs in `docs/adr/` for the area you're touching. Commit the PRD file before moving on (it counts as a Phase 0–2 docs artifact).
+
+#### C.2: Draft vertical-slice issues
+
+Break the PRD into **tracer-bullet** issues — each is a thin vertical slice through every layer (schema → API → UI → tests), not a horizontal slice of one layer. Slices may be:
+
+- **AFK** — an agent can pick up and merge with no human in the loop
+- **HITL** — requires human interaction (architectural decision, design review)
+
+Prefer AFK over HITL. Prefer many thin slices over few thick ones. Each completed slice must be demoable or verifiable on its own.
+
+For each proposed slice, draft:
+- **Title** — short, descriptive, uses domain glossary
+- **Type** — HITL or AFK
+- **Blocked by** — which other slices must complete first (or "None")
+- **Acceptance criteria** — 2–4 checkboxes covering the slice end-to-end
+- **User stories covered** — which PRD user stories this addresses
+
+#### C.3: Quiz the user
+
+Present the proposed breakdown as a numbered list with the fields above. Ask:
+- Does the granularity feel right? (too coarse / too fine)
+- Are the dependency relationships correct?
+- Should any slices be merged or split further?
+- Are HITL/AFK markers correct?
+
+Iterate until the user approves.
+
+#### C.4: Publish to Notion via `jameskill:report-issue`
+
+**MUST invoke `jameskill:report-issue` via the Skill tool**, passing the approved slices as the input prompt. Publish in **dependency order (blockers first)** so "Blocked by" fields can reference real Notion issue URLs.
+
+For each slice, hand report-issue a structured item containing:
+- The slice title (as the issue title)
+- A body composed of: "What to build" (concise end-to-end description), Acceptance criteria checkboxes, Blocked by reference (issue URL if already published, otherwise the slice title to be linked later), Type (HITL/AFK)
+
+If invocation fails or the skill is unavailable, STOP and report — do NOT fall back to manual Notion API calls.
+
+#### C.5: Stop
+
+**Do not attempt to implement all slices in one run.** Tell the user:
+
+> "PRD written to `<path>` and N vertical-slice issues registered in Notion. Pick up each one via `/jameskill:resolve-issue` — it will route back into this workflow per slice."
 
 ### Route D: Clear feature → Phase 3 directly
 
@@ -182,7 +259,7 @@ Record the resulting commit SHA — Phase 4.1 uses it as the baseline for the im
 4. Repeat until the feature is complete
 
 **Skip conditions:**
-- UI-only work with no testable logic (per project CLAUDE.md: "No tests for UI-only components")
+- UI-only work with no testable logic — if the project's `CLAUDE.md`/`AGENTS.md` explicitly excludes UI tests, honour that
 - Route A already completed fix + test via diagnose
 
 **Output:** Working implementation with tests.

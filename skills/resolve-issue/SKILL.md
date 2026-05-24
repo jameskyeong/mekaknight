@@ -267,7 +267,7 @@ Derive the group's common context in Phase 0/1 (grill-me + grill-with-docs),
 but address every individual issue in Phase 3 (build) without omission.
 ```
 
-The workflow skill handles the full cycle: clarify (grill-me) → validate (grill-with-docs) → route (diagnose/prototype/to-prd+to-issues/direct) → build (tdd) → architecture review → code review → verify.
+The workflow skill handles the full cycle: clarify (grill-me) → validate (grill-with-docs) → route (diagnose/prototype/PRD+Notion-issues/direct) → build (tdd) → architecture review → code review → verify.
 
 **If `jameskill:workflow` is not available:** Inform the user that the workflow skill is unavailable, then proceed with a standard brainstorming approach — present the issue context directly in the conversation and work through the solution interactively with the user.
 
