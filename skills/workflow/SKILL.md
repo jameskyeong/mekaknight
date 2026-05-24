@@ -2,10 +2,11 @@
 name: jameskill:workflow
 description: >-
   Matt Pocock skill orchestrator with Notion-integrated issue tracking.
-  Chains grill-me, grill-with-docs, diagnose, prototype, tdd, and improve-codebase-architecture
-  for problem understanding and implementation. Large features split into vertical-slice
-  Notion issues via jameskill:report-issue. Use when: 'workflow', 'start working on',
-  'implement this', 'fix this', 'build this'. Also invoked by resolve-issue after issue selection.
+  Chains grill-me, grill-with-docs, diagnose, prototype, tdd, improve-codebase-architecture,
+  simplify, and /security-review for problem understanding, implementation, and
+  quality/security review. Large features split into vertical-slice Notion issues via
+  jameskill:report-issue. Use when: 'workflow', 'start working on', 'implement this',
+  'fix this', 'build this'. Also invoked by resolve-issue after issue selection.
 ---
 
 # Workflow — Matt Pocock Skill Orchestrator
@@ -329,6 +330,47 @@ Present the two reports under `## Standards` and `## Spec` headings. Do **not** 
 | Both axes pass | Proceed to Phase 5 |
 
 **Output:** Standards + Spec review report, all violations resolved.
+
+---
+
+## Phase 4.5: Quality & Security Review
+
+**Goal:** Defense-in-depth review beyond the Standards/Spec axes. Security is default-ON; quality is conditional.
+
+### 4.5.1: Quality — `simplify` (conditional)
+
+**Skip when ALL hold:**
+- Diff < 30 lines net (`git diff --shortstat <Phase 2.5 baseline>..HEAD`)
+- No new files or modules introduced
+- Phase 3.5 reported no out-of-scope findings
+
+Otherwise invoke the `simplify` skill on the Phase 4.1 diff. It reviews changed code for reuse, quality, and efficiency, then applies fixes. If it produces fixes, loop forward to Phase 5 for re-verification — do **not** re-trigger Phase 4 (the diff scope is unchanged).
+
+**If `simplify` is unavailable in the session, skip with a note — this step is non-blocking.**
+
+### 4.5.2: Security — `/security-review` + `semgrep` (default ON)
+
+**Skip ONLY when ALL hold:**
+- Diff is purely cosmetic (CSS / className / copy / comment / markdown only)
+- No new dependencies (`package.json` / lockfile unchanged)
+- No changes under any of: auth-related paths, API route/controller handlers, DB schema files, env or config files, crypto utilities, external integration adapters, file upload handlers
+
+Otherwise run in order:
+
+1. **Invoke `/security-review` skill** — OWASP Top 10–oriented audit of pending changes
+2. **Invoke `semgrep` skill if available** — deterministic SAST rule matching. If the `semgrep` plugin is not installed, skip with a note (do not block)
+
+Merge findings, deduplicated by file:line.
+
+### 4.5.3: Triage findings
+
+| Severity | Action |
+|---|---|
+| Critical / High | Fix immediately, loop back to Phase 3 (TDD-driven fix), then re-run 4.5.2 |
+| Medium | Present to user, default = fix unless the user explicitly defers |
+| Low / Info | Note in the Phase 5.1 commit body, suggest `/jameskill:report-issue` for follow-up |
+
+**Compound effect:** Security posture and code clarity improve incrementally with every workflow run.
 
 ---
 
