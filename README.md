@@ -35,17 +35,32 @@ Notion-backed issue lifecycle. From a Slack-pasted blob of bug reports to groupe
 
 ### 🛠  Workflow
 
-Structured development flow that orchestrates [Matt Pocock skills](https://github.com/mattpocock/skills) into a single chain: from problem statement to verified implementation.
+Structured development flow that orchestrates [Matt Pocock skills](https://github.com/mattpocock/skills) and [superpowers](https://github.com/obra/superpowers) into a single chain: from problem statement to merged implementation.
 
 | Command | Purpose |
 |---|---|
-| `/workflow` | Full development flow from problem to verified implementation |
+| `/workflow` | Full development flow — clarify, build, review, verify, finish |
 
-**Phases** — clarify → grill → route → build (TDD) → architecture → review → verify.
+**Phases** — clarify → grill → **route** → build → architecture → quality/security → independent code review → verify → finish.
 
-The router fans out by task type: bugs go to `diagnose`, exploratory work goes to `prototype`, large features get a PRD + issue decomposition, clear features go straight to build.
+The router fans out by task scope, not just task type:
 
-> Requires Matt Pocock skills installed at `~/.claude/skills/` or `.claude/skills/`. The workflow halts at Phase −1 (Preflight) if any required skill is missing — no silent skips.
+| Route | When | Skill chain |
+|---|---|---|
+| **Bug** | Reproducible broken behavior | `diagnose` |
+| **Exploration** | UI shape or data model unclear | `prototype` |
+| **Large cross-session** | 3+ modules, multiple sessions, AFK pickup | PRD + Notion issues |
+| **Medium in-session** | Coherent feature, multiple dependent tasks, one session | `writing-plans` → `subagent-driven-development` |
+| **Small clear** | Single contained change | Direct TDD |
+
+**What's different from a plain TDD chain**
+
+- Domain documentation (`CONTEXT.md`, ADRs) gets refined every run — not as a one-off effort.
+- Reviews run as isolated reviewer subagents (`requesting-code-review`), so the reviewer has no recency bias from writing the code.
+- "Done" is gated by `verification-before-completion` — soft language like "should work" doesn't pass.
+- The branch finish (`finishing-a-development-branch`) is an explicit step, not an afterthought.
+
+> Requires both [Matt Pocock skills](https://github.com/mattpocock/skills) and [superpowers](https://github.com/obra/superpowers) installed at `~/.claude/skills/` or as plugins. The workflow halts at Phase −1 (Preflight) if any required skill is missing — no silent skips.
 
 ## Installation
 

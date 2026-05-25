@@ -1,21 +1,21 @@
 ---
 name: jameskill:workflow
 description: >-
-  Matt Pocock skill orchestrator with Notion-integrated issue tracking.
-  Chains grill-me, grill-with-docs, diagnose, prototype, tdd, improve-codebase-architecture,
-  simplify, and /security-review for problem understanding, implementation, and
-  quality/security review. Large features split into vertical-slice Notion issues via
-  jameskill:report-issue. Use when: 'workflow', 'start working on', 'implement this',
-  'fix this', 'build this'. Also invoked by resolve-issue after issue selection.
+  Skill orchestrator combining Matt Pocock and superpowers with Notion-integrated issue tracking.
+  Routes by task scope: bug, exploration, large cross-session (PRD + Notion issues), medium
+  in-session (local plan + subagent execution), or small clear feature. Runs grill → route →
+  build → architecture → quality/security → independent code review → verify → finish.
+  Use when: 'workflow', 'start working on', 'implement this', 'fix this', 'build this'.
+  Also invoked by resolve-issue after issue selection.
 ---
 
-# Workflow — Matt Pocock Skill Orchestrator
+# Workflow — Skill Orchestrator
 
-Orchestrates Matt Pocock skills into a complete development flow: understand the problem, build it right, and leave the codebase better than you found it.
+Orchestrates [Matt Pocock skills](https://github.com/mattpocock/skills) and [superpowers](https://github.com/obra/superpowers) into a complete development flow: understand the problem, build it right, review it independently, verify it works, and finish the branch cleanly.
 
 **Compound engineering guarantee:** Every workflow run improves domain docs, test coverage, and codebase structure — not just the immediate deliverable.
 
-**Hard requirement:** This workflow requires Matt Pocock skills to be available in the current session (via plugin, user-level, or project-level installation). Phase -1 verifies this and **halts the workflow** if any required skill is missing. There is no fallback path — if a required skill cannot be invoked, the workflow stops.
+**Hard requirement:** This workflow requires both skill families to be available in the current session (via plugin, user-level, or project-level installation). Phase -1 verifies this and **halts the workflow** if any required skill is missing. There is no fallback path — if a required skill cannot be invoked, the workflow stops.
 
 ---
 
@@ -27,6 +27,9 @@ Check whether the following skills are available in the current session by verif
 
 **Matt Pocock skills:**
 - `grill-me`, `grill-with-docs`, `diagnose`, `prototype`, `tdd`, `improve-codebase-architecture`
+
+**superpowers skills:**
+- `writing-plans`, `subagent-driven-development`, `requesting-code-review`, `verification-before-completion`, `finishing-a-development-branch`
 
 **jameskill skills** (required only if Route C is taken — preflight verifies upfront for safety):
 - `jameskill:report-issue`
@@ -40,12 +43,25 @@ Skills may be installed as plugins, in `~/.claude/skills/`, or in `.claude/skill
 > **Missing skills:** [missing list]
 >
 > **How to install:**
-> - Matt Pocock skills: see [mattpocock/skills](https://github.com/mattpocock/skills) for installation instructions.
+> - Matt Pocock skills — see [mattpocock/skills](https://github.com/mattpocock/skills) for installation instructions.
+> - superpowers — see [obra/superpowers](https://github.com/obra/superpowers) for installation instructions.
 > - jameskill skills: install the `jameskill` plugin via the jameskill marketplace.
 >
 > Re-run `/jameskill:workflow` after installation completes.
 
 Proceed to Phase 0 only when all required skills are confirmed available.
+
+---
+
+## Cross-cutting gate: verification before completion
+
+Every phase that ends with a "done", "passing", or "fixed" claim **MUST** invoke `verification-before-completion` first. This applies everywhere — it is non-negotiable.
+
+- No phase declares success without running a fresh verification command and observing the output directly.
+- No agent summary substitutes for direct output inspection.
+- Soft language ("should work", "seems to pass", "probably fixed") is a red flag — treat it as "not verified".
+
+This gate is referenced explicitly in Phase 3, 3.5, 4.5, and 5.
 
 ---
 
@@ -112,6 +128,14 @@ After grill-with-docs completes, run this checklist before proceeding to Phase 2
 
 Based on Phase 1 output, determine the nature of the work and route accordingly. **Only one route is taken per run.**
 
+| Route | When | Skill chain |
+|---|---|---|
+| **A. Bug** | Error reports, stack traces, "it used to work", reproducible broken behavior | `diagnose` |
+| **B. Exploration** | UI shape uncertain, data model needs experimentation | `prototype` |
+| **C. Large cross-session feature** | 3+ distinct modules, multiple sessions, AFK pickup intended | PRD + `jameskill:report-issue` (Notion) |
+| **D. Medium in-session feature** | Single coherent feature, multiple dependent tasks, one session | `writing-plans` → `subagent-driven-development` |
+| **E. Small clear feature** | Single contained change, requirements obvious | Phase 3 directly |
+
 ### Route A: Bug → `diagnose`
 
 **Signal:** Error reports, stack traces, "it used to work", reproducible broken behavior.
@@ -136,9 +160,9 @@ After diagnose completes, proceed to **Phase 3.5** (skip Phase 3 — diagnose al
 
 After the user picks a direction from the prototype, proceed to **Phase 3**.
 
-### Route C: Large feature → PRD + vertical-slice Notion issues
+### Route C: Large cross-session feature → PRD + vertical-slice Notion issues
 
-**Signal:** Phase 1 output contains 3+ distinct tasks, spans multiple modules, or would take multiple sessions.
+**Signal:** Phase 1 output contains 3+ distinct tasks, spans multiple modules, or would take multiple sessions (often picked up later by an AFK agent).
 
 This route formalises requirements into a PRD that lives in the codebase, then breaks it into vertical-slice issues that get registered in Notion via `jameskill:report-issue`. No matt-tracker calls — Notion is the single source of truth.
 
@@ -218,9 +242,31 @@ If invocation fails or the skill is unavailable, STOP and report — do NOT fall
 
 > "PRD written to `<path>` and N vertical-slice issues registered in Notion. Pick up each one via `/jameskill:resolve-issue` — it will route back into this workflow per slice."
 
-### Route D: Clear feature → Phase 3 directly
+### Route D: Medium in-session feature → `writing-plans` → `subagent-driven-development`
 
-**Signal:** None of the above. Requirements are clear, scope is contained, ready to build.
+**Signal:** single coherent feature that spans multiple tasks but fits in one session. Tasks may have dependencies. Cross-session Notion tracking would be overhead. Typical shape: 5–15 commits touching 2–4 files with shared state.
+
+**Why this route exists:** Route C's Notion round-trip is overhead when work doesn't need cross-session pickup. Phase 3 direct TDD becomes hard to manage when tasks have dependencies and the diff grows past ~10 commits. Route D fills the gap with local plan files and subagent isolation.
+
+#### D.1: Write the plan
+
+**MUST invoke `writing-plans` via the Skill tool** to produce a local plan file (typically under `docs/plans/<feature-slug>.md`). The plan breaks the feature into bite-sized tasks with explicit test → implement → commit steps.
+
+The plan file is a Phase 0–2 docs artifact — it gets sealed off in the Phase 2.5 baseline commit.
+
+#### D.2: Execute the plan
+
+**MUST invoke `subagent-driven-development` via the Skill tool** to execute the plan. Each task runs in a fresh subagent context with built-in spec-compliance and code-quality review loops.
+
+If a task returns `BLOCKED` or `NEEDS_CONTEXT`, surface it to the user — do NOT improvise.
+
+If invocation fails or the skill is unavailable, STOP and report — do NOT fall back to manual sequential implementation (use Route E for that).
+
+After all tasks complete, proceed to **Phase 3.5** (skip Phase 3 — subagent-driven-development already includes implementation + per-task review).
+
+### Route E: Small clear feature → Phase 3 directly
+
+**Signal:** None of the above. Requirements are clear, scope is contained (typically 1–4 commits, single file or tightly-grouped files), ready to build.
 
 Proceed directly to **Phase 3**.
 
@@ -228,9 +274,9 @@ Proceed directly to **Phase 3**.
 
 ## Phase 2.5: Checkpoint — Commit docs baseline
 
-**Goal:** Seal off Phase 0–2 documentation work (CONTEXT.md, ADRs, terminology updates) as a separate commit so Phase 4's review diff sees only code changes.
+**Goal:** Seal off Phase 0–2 documentation work (CONTEXT.md, ADRs, terminology updates, Route D plan files) as a separate commit so Phase 4's review diff sees only code changes.
 
-**Applies to:** Routes A, B, D. Route C exits before this phase.
+**Applies to:** Routes A, B, D, E. Route C exits before this phase.
 
 **Skip conditions:**
 - Not a git repository
@@ -239,7 +285,7 @@ Proceed directly to **Phase 3**.
 If the working tree has uncommitted documentation changes, create one commit scoped to docs only:
 
 ```bash
-git add CONTEXT.md docs/adr/ <other-doc-paths>
+git add CONTEXT.md docs/adr/ docs/plans/ <other-doc-paths>
 git commit -m "docs: capture domain context for <problem statement>"
 ```
 
@@ -259,11 +305,14 @@ Record the resulting commit SHA — Phase 4.1 uses it as the baseline for the im
 3. **REFACTOR** — Clean up while keeping tests green
 4. Repeat until the feature is complete
 
+Before declaring the feature complete, invoke `verification-before-completion` to confirm all tests pass with direct output inspection.
+
 **Skip conditions:**
 - UI-only work with no testable logic — if the project's `CLAUDE.md`/`AGENTS.md` explicitly excludes UI tests, honour that
-- Route A already completed fix + test via diagnose
+- Route A already completed fix + test via `diagnose`
+- Route D already completed build + per-task review via `subagent-driven-development`
 
-**Output:** Working implementation with tests.
+**Output:** Working implementation with tests, verification gate passed.
 
 ---
 
@@ -271,15 +320,17 @@ Record the resulting commit SHA — Phase 4.1 uses it as the baseline for the im
 
 **Goal:** Check whether the new code fits well structurally, and fix what can be fixed now.
 
-**MUST invoke `improve-codebase-architecture` via the Skill tool**, scoped to the files changed in Phase 3 (or Route A). If invocation fails or the skill is unavailable, STOP and report — do NOT proceed manually.
+**MUST invoke `improve-codebase-architecture` via the Skill tool**, scoped to the files changed in Phase 3 (or Route A's diagnose, or Route D's subagent execution). If invocation fails or the skill is unavailable, STOP and report — do NOT proceed manually.
 
 Review results and act:
 
 | Finding | Action |
 |---|---|
-| In scope of current work | Fix immediately (loop back to Phase 3 tdd for the fix) |
+| In scope of current work | Fix immediately (loop back to Phase 3 tdd, or Route D step 2) |
 | Out of scope, small (1-2 lines) | Fix immediately |
 | Out of scope, large | Note for the user — suggest `/jameskill:report-issue` to track separately |
+
+If any fixes are applied, invoke `verification-before-completion` before proceeding.
 
 **Compound effect:** Codebase architecture improves incrementally with every workflow run.
 
@@ -287,49 +338,30 @@ Review results and act:
 
 ---
 
-## Phase 4: Review — Two-Axis Code Review
+## Phase 4: Review — `requesting-code-review`
 
-**Goal:** Two-axis code review before declaring done. Standards and Spec are reviewed independently so one axis cannot mask the other.
+**Goal:** Independent code review by an isolated reviewer subagent. The reviewer has no recency bias from writing the code, and the two-axis (standards + spec) discipline is preserved through structured prompts.
 
-> **Note:** Matt Pocock's `review` skill is currently `in-progress` and under development. Once it is promoted to stable (`skills/engineering/`), switch this Phase to a Skill invocation. Until then, follow the inline process below.
+**MUST invoke `requesting-code-review` via the Skill tool**, passing:
 
-### 4.1: Determine the diff
+- **BASE SHA** — the Phase 2.5 baseline commit (the docs commit captured before implementation began). If Phase 2.5 was skipped, fall back to the commit at which the workflow started.
+- **HEAD SHA** — current `HEAD`
+- **Spec sources** — the problem statement from Phase 0–1, the original issue body if invoked from `resolve-issue`, the PRD from Route C, or the plan file from Route D
+- **Standards sources** — `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `CONTEXT.md`, `docs/adr/`. Machine-enforced standards (linter/formatter configs) — note them but don't re-check what tooling already enforces.
 
-Compare the current state against the **Phase 2.5 baseline commit** (the docs commit captured before implementation began). If Phase 2.5 was skipped, fall back to the commit at which the workflow started. Use merge-base comparison. Also note the commit list for context.
+If invocation fails or the skill is unavailable, STOP and report — do NOT fall back to manual inline review.
 
-### 4.2: Collect review sources
+Triage findings:
 
-**Standards sources** — any project documents that define how code should be written:
-- Project instruction files (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`)
-- Domain documentation (`CONTEXT.md`, per-module context files)
-- Architectural decisions (`docs/adr/`)
-- Machine-enforced standards (linter/formatter configs) — note them but don't re-check what tooling already enforces
-
-**Spec source** — what was agreed to build:
-- The problem statement from Phase 0-1 (grill-me + grill-with-docs output)
-- If invoked from resolve-issue: the original issue title + body
-- Issue references in commit messages
-- PRD from Route C if applicable
-
-### 4.3: Run two reviews in parallel sub-agents
-
-Spawn two `general-purpose` sub-agents simultaneously. They must not share context.
-
-**Standards sub-agent:** Read the standards docs found in 4.2, then read the diff. Report every place the diff violates a documented standard. Cite the standard (file + the rule). Distinguish hard violations from judgement calls. Skip anything tooling enforces. Under 400 words.
-
-**Spec sub-agent:** Read the spec from 4.2, then read the diff. Report: (a) requirements the spec asked for that are missing or partial; (b) behavior in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words.
-
-### 4.4: Aggregate and act
-
-Present the two reports under `## Standards` and `## Spec` headings. Do **not** merge or rerank — keep axes separate.
-
-| Review result | Action |
+| Severity | Action |
 |---|---|
-| Hard violation found | Fix it, loop back to Phase 3 tdd |
-| Judgement call flagged | Present to user for decision |
-| Both axes pass | Proceed to Phase 5 |
+| **Critical** | Fix immediately, loop back to Phase 3 (or Route D step 2), then re-run Phase 4 |
+| **Important** | Fix unless the user explicitly defers |
+| **Minor** | Note in the Phase 5.2 commit body, suggest `/jameskill:report-issue` for follow-up |
 
-**Output:** Standards + Spec review report, all violations resolved.
+If you believe a reviewer finding is technically wrong, follow `receiving-code-review`'s `push back with technical reasoning` guidance — do NOT performatively agree. If `receiving-code-review` is available, invoke it to structure the response.
+
+**Output:** Review report with all Critical and Important items resolved.
 
 ---
 
@@ -368,17 +400,21 @@ Merge findings, deduplicated by file:line.
 |---|---|
 | Critical / High | Fix immediately, loop back to Phase 3 (TDD-driven fix), then re-run 4.5.2 |
 | Medium | Present to user, default = fix unless the user explicitly defers |
-| Low / Info | Note in the Phase 5.1 commit body, suggest `/jameskill:report-issue` for follow-up |
+| Low / Info | Note in the Phase 5.2 commit body, suggest `/jameskill:report-issue` for follow-up |
+
+If any fixes are applied, invoke `verification-before-completion` before proceeding to Phase 5.
 
 **Compound effect:** Security posture and code clarity improve incrementally with every workflow run.
 
 ---
 
-## Phase 5: Verify
+## Phase 5: Verify and finish
 
-**Goal:** Mechanical verification that nothing is broken.
+**Goal:** Mechanical verification, then commit the implementation, then explicit branch-finish decision.
 
-Run the project's verification suite. Detect which checks are available from the project configuration and run them all:
+### 5.1: Verification — `verification-before-completion`
+
+**MUST invoke `verification-before-completion` via the Skill tool.** Run every check the project exposes:
 
 - **Type checking** — ensure the codebase compiles without type errors
 - **Tests** — run the full test suite (or the relevant subset if the project is large)
@@ -386,24 +422,42 @@ Run the project's verification suite. Detect which checks are available from the
 
 If the project has a single command that runs all checks, prefer that over running individual tools.
 
-If any check fails, fix the issue and re-run from Phase 5 (do not re-run earlier phases unless the fix is substantial).
+The verification gate **does not pass** until every check is green and the output is directly observed. If any check fails, fix the issue and re-run from 5.1 (do not re-run earlier phases unless the fix is substantial).
 
-### 5.1: Final commit
+### 5.2: Final commit
 
 Once every check is green, commit the implementation as a single coherent change.
 
 **Skip conditions:**
 - Not a git repository
 - No code changes to commit (e.g., docs-only workflow)
+- Route D already produced per-task commits via `subagent-driven-development` (in which case skip — the work is already captured)
 
 ```bash
 git add <implementation files>
 git commit -m "<type>: <one-line description of what was built>"
 ```
 
-Use the spec source from Phase 4.2 to inform the message. If invoked from `resolve-issue`, include the issue reference (e.g., `refs #123`).
+Use the spec source from Phase 4 to inform the message. If invoked from `resolve-issue`, include the issue reference (e.g., `refs <Notion URL>`).
 
-**Output:** All checks green and the implementation captured as one commit on top of the Phase 2.5 baseline.
+**Output:** All checks green and the implementation captured on top of the Phase 2.5 baseline.
+
+### 5.3: Branch finish — `finishing-a-development-branch`
+
+**MUST invoke `finishing-a-development-branch` via the Skill tool.** It presents a 4-option decision based on the current environment:
+
+| Option | When it fits |
+|---|---|
+| Local merge | Solo project, no PR review process, work is complete |
+| Open PR | Team workflow, code review required, remote branch tracked |
+| Keep branch | Work is paused, not ready to merge |
+| Discard | Work is throwaway (e.g., a prototype that informed a decision but isn't being shipped) |
+
+If invoked from `resolve-issue`, the caller may instead choose to keep the branch and let resolve-issue's status transition handle the finish — surface this option to the user.
+
+If the skill is unavailable, STOP and ask the user — do NOT auto-merge or auto-push.
+
+**Output:** Work captured cleanly. Branch is merged, PR is open, or worktree is parked as the user chose.
 
 ---
 

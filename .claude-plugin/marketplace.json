@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Developer productivity skills by James Kyeong",
-    "version": "1.9.0"
+    "version": "1.10.0"
   },
   "plugins": [
     {
@@ -16,7 +16,7 @@
         "url": "https://github.com/jameskyeong/jameskill.git"
       },
       "description": "Developer productivity skills for Claude Code — issue tracking, structured workflows, and more",
-      "version": "1.9.0",
+      "version": "1.10.0",
       "strict": true
     }
   ]
