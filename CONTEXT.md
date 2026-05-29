@@ -31,18 +31,14 @@ _Avoid_: roadmap, spec (different things)
 ### Inspection
 
 **Lock**:
-Inspection engine (`/mekaknight:lock`) that checks a target project for service-configuration security holes — Supabase RLS gaps, secret-key client exposure, missing webhook signature verification. Catches what code scanners (semgrep) miss: configuration mistakes, not code patterns. Named for the lockdown step before a mech sortie — sealing every hatch before launch.
-_Avoid_: auth-check (too narrow — most checks are not auth), secure (implies it covers all security; it covers ~1/3, the rest is semgrep + secret scanning), harden (v1 name, retired)
+Alpha utility (`/mekaknight:lock`) for service-configuration security inspection — Supabase RLS gaps, secret-key client exposure, missing Stripe webhook signatures. v0.1 ships in v2.0 but is **off the marketing surface** (see ADR 0004): the author does not rely on it daily, and three live company codebases returned zero BLOCK findings during dogfooding. Reachable for users who want it; future direction (wrap, deep, or sunset) is deferred to v2.1+. Named for the lockdown step before a mech sortie.
+_Avoid_: harden (v1 name, retired), production-readiness gate (lock is not the gate in v2.0; see ADR 0004).
 
 ### Launch ecosystem
 
-**Launch-check** (planned):
-Umbrella inspection skill that runs security + design + quality checks and produces a 1-minute summary. Invoked automatically by **forge** before the finish phase. Does not exist yet — planned for M4 once design and quality skills land.
-_Avoid_: audit, review (launch-check is automated and multi-dimensional)
-
 **Launch**:
-The GO / NO-GO verdict skill (`/mekaknight:launch`). Aggregates inspection findings (currently **lock**; later **launch-check**) into a single binary answer to "can I deploy this?". The output reads "LAUNCH READY?".
-_Avoid_: deploy check, release gate, ship-ready (v1 name, retired)
+Alpha utility (`/mekaknight:launch`) that issues a GO / NO-GO verdict by aggregating lock's findings. v0.1 ships in v2.0 but is **off the marketing surface** for the same reason as lock (see ADR 0004). The output reads "LAUNCH READY?". Future direction tied to whether post-launch users ask for it.
+_Avoid_: ship-ready (v1 name, retired), production-readiness gate (deferred from v2.0 surface).
 
 ### Issue tracking
 

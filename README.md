@@ -54,14 +54,14 @@ The router fans out by task type. **Tracker-free** — forge itself never reads 
 
 > `forge` is self-contained — no external skill dependencies. See [ADR 0001](docs/adr/0001-self-contained-orchestrator.md) for the decision rationale.
 
-### 🔒  Security Inspection & Launch Verdict
+### 🔬  Alpha utilities (off the v2.0 headline)
 
-Catch the configuration-level holes static scanners miss, then aggregate findings into a single deploy decision.
+Two skills ship in v2.0 but are **not** the v2.0 story — the author doesn't use them daily and dogfooding didn't surface real findings. Available if you want them; future direction tied to post-launch feedback. See [ADR 0004](docs/adr/0004-narrow-v2-to-forge-and-tracker.md) for the reasoning.
 
-| Command | Purpose |
+| Command | What it does |
 |---|---|
-| `/lock` | Inspect a project for service-configuration security holes (Supabase RLS, secret-key client exposure, Stripe webhook signatures). Reports PASS/WARN/BLOCK with fix suggestions. |
-| `/launch` | One-line GO / NO-GO deploy verdict. Aggregates inspection findings into a single binary decision. |
+| `/lock` | v0.1 inspection for Supabase RLS gaps, secret-key client exposure, missing Stripe webhook signatures |
+| `/launch` | v0.1 GO / NO-GO deploy verdict aggregating lock's findings |
 
 ### 🗂  Issue Tracking
 

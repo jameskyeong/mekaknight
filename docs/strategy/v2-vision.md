@@ -1,100 +1,99 @@
 # mekaknight v2.0 — Vision
 
-> 작성일: 2026-05-28
-> 상태: Draft (사용자 결정 기반, 모호 항목은 TBD로 표시)
+> 작성일: 2026-05-28 (피벗 반영 2026-05-30)
+> 상태: Draft. ADR 0004 narrow pivot 반영. ADR 0003 (lite-wrap)은 superseded.
 
 ## 한 줄 정체성
 
-> **mekaknight — The production-readiness layer for AI-built apps.**
+> **mekaknight — A disciplined Claude Code workflow + an issue tracker that reads like a problem statement.**
 
-한국어 부캐: *"AI가 만든 화면을, 운영 들어가도 안 죽게 만든다."*
+한국어 부캐: *"엄격한 Claude Code 워크플로 + 문제 진술처럼 읽히는 이슈 트래커."*
+
+## Why narrow, not wrap
+
+ADR 0003은 v2.0을 16주 deep build에서 6-8주 lite wrap (lock이 semgrep/gitleaks/supabase CLI를 wrap, launch가 verdict surface)으로 좁혔다. 더 들여다보니: wrap layer도 여전히 사용자에게 외부 inspector 설치를 강제하고, 저자가 매일 쓰지 않는 도구 위에 마케팅을 얹는 구조였다. ADR 0004는 한 단계 더 좁힌다 — **저자가 매일 dogfood하는 surface만 marketing surface로**: forge (development orchestrator) + tracker (link/tag/strike). lock + launch는 v0.1 그대로 repo + 플러그인에 남되 README/영상 헤드라인 밖. 방향은 출시 후 사용자 demand로 결정. 상세: `docs/adr/0004-narrow-v2-to-forge-and-tracker.md`.
 
 ## 왜 이 정체성인가
 
-### 빈 시장 (리서치로 검증됨)
+### 빈 시장 (관점 재정렬)
 
-- **vibe coding 시장**: 2026년 $4.7B, CAGR 38%. Lovable $100M ARR, Replit Agent $100M ARR. 90%가 production 미진입.
-- **Production 진입 실패 원인**: AI 코드 40-62%에 보안 결함, 380,000개 vibe-coded 앱이 실제로 노출 (RedAccess 조사).
-- **현존 도구의 한계**:
-  - 보안 SAST (Semgrep, Snyk) — 보안만, 엔터프라이즈 페르소나
-  - 디자인 (Stark, axe) — 디자인만, vibe coder 표적 X
-  - 사람 컨설팅 (VIBECODE AUDIT $199-599) — 자동화 X
-  - 플랫폼 내장 (Replit Security Agent, Vercel Deepsec) — 자기 플랫폼만
-- **빈 자리**: 보안 + 디자인 + 품질을 **하나의 출하 직전 게이트**로 묶은 cross-platform 자동화 도구.
+- **Claude Code 워크플로 시장**: superpowers (210k★), Matt Pocock (110k★) — 둘 다 합성 가능한 작은 스킬 스택. 외부 plugin install이 전제.
+- **이슈 트래커 시장**: Linear / Notion / GitHub Issues — 모두 generic CRUD. AI 코드 컨텍스트에서 "프롬프트가 문제 진술이 된다"는 humane tracking 자리는 비어 있음.
+- **빈 자리**: **self-contained 한 명령으로 strict TDD + no-soft-language verification을 강제하는 development orchestrator** + **프롬프트/blob을 문제 진술 단위의 이슈로 변환하는 Notion-네이티브 트래커**. v2.0은 이 두 축에 집중.
 
 ### 경쟁 지형의 자리
 
 | 진영 | 자리 | mekaknight과의 관계 |
 |---|---|---|
-| obra/superpowers (210k★) | 방법론 스택 (brainstorm → plan → tdd → review) | 그들은 *개발 중* 루프. 우리는 *출하 직전* 게이트 |
-| Matt Pocock (110k★) | 엔지니어용 작고 조합 가능한 스킬 | 그들은 엔지니어 페르소나. 우리는 **vibe coder + 시니어 양쪽** |
-| Anthropic security-guidance | 보안 단일축 (2026.5 출시) | **인접 경쟁자.** 우리는 보안 + 디자인 + 품질 **통합** |
-| Anthropic frontend-design | 디자인 생성 *전* 가이드 | 우리는 디자인 생성 *후* 측정·진단·수정 |
-| VIBECODE AUDIT | 사람 컨설팅 $199-599 | 우리는 자동화 + Claude Code 네이티브 |
+| obra/superpowers (210k★) | 합성 가능한 작은 스킬 스택 (brainstorm → plan → tdd → review) | 그들은 *여러 plugin 조합*. 우리는 *한 명령 self-contained orchestrator* (forge). 외부 install 없음 |
+| Matt Pocock (110k★) | 엔지니어용 작고 조합 가능한 스킬 | 그들은 엔지니어 합성. forge는 한 명령으로 4단계 묶음 — 결정 비용 ↓ |
+| Linear / Notion / GitHub Issues | generic CRUD 트래커 | tracker는 프롬프트 → 문제 진술 변환. 이슈 제목이 commit 메시지가 아닌 문제 진술처럼 읽힘 |
+| Anthropic security-guidance | 보안 단일축 (2026.5 출시) | v2.0 marketing surface 와 거의 겹치지 않음. lock/launch가 alpha utility로 인접하나 헤드라인 아님 |
+| VIBECODE AUDIT | 사람 컨설팅 $199-599 | 본 v2.0 surface와 무관 |
 
-### 차별화의 네 축
+### 차별화의 두 축
 
-1. **다축 통합** — 보안 + 디자인 + 품질을 하나의 워크플로로. 현존 어떤 도구도 통합 표지 안 함.
-2. **플랫폼 무관** — Lovable export, v0 export, Bolt zip, Replit clone 모두 처리.
-3. **vibe coder 페르소나 UX** — "Supabase RLS가 뭔지 모름" 전제, 자동 수정 PR 생성.
-4. **Claude Code 워크플로 네이티브** — Anthropic security-guidance가 작은 축(PR 코멘트)만 다루므로, "전체 라이프사이클" 자리 선점 가능.
+1. **discipline-first** — forge의 strict TDD + no-soft-language verification. "works on my machine" / "should be fine" 같은 soft language를 verification 경계에서 거부. 한 명령 self-contained — superpowers / Matt Pocock 같은 외부 plugin 조합 불필요.
+2. **humane-tracking-first** — tracker의 이슈가 commit 메시지("fix: X")가 아닌 **문제 진술**("사용자가 X를 시도했을 때 Y 상태가 됨")로 읽히도록 프롬프트/blob을 파싱. 코드베이스에 대조 후 검증.
 
 ## 타겟 페르소나
 
-### 1차: Vibe Coder (Lovable / v0 / Bolt / Replit / Cursor Agent 사용자)
-- 화면은 만들 수 있지만 "이걸 진짜 서비스로?"가 막힘
-- "Supabase RLS"가 뭔지 모름, "OWASP Top 10"이 뭔지 모름
-- 가장 두려운 일: 출시 직후 데이터 노출 / 디자인이 "AI같음"이라고 비웃음
-- 가격 민감 (Lovable $20/월 쓰는 사람) — Claude Code 플러그인 자체가 적합한 가격대
+### 1차: Claude Code 사용 개발자 (discipline 원함)
+- 매일 Claude Code를 사용. superpowers / Matt Pocock 알지만 plugin 조합 부담 또는 self-contained 선호
+- "AI가 만든 코드가 작동하긴 하는데 verify 단계가 흐려진다" 문제 의식
+- strict TDD를 강제하는 single-command orchestrator 원함
 
-### 2차: 시니어 엔지니어 (vibe 코더의 결과물을 production에 올리는 역할)
-- AI 생성 코드의 PR 리뷰에 시간 낭비
-- 같은 패턴의 실수를 매번 잡아야 함
-- 표준화된 audit 체크리스트가 필요
+### 2차: Notion 이슈 트래커 사용자
+- 이미 Notion에서 이슈 관리 중. generic CRUD 또는 수동 입력에 피로
+- AI 코드 컨텍스트에서 "프롬프트 한 덩어리 → grouped issues"가 필요
+- 이슈 제목이 의미 있는 문제 진술이길 원함
 
 ### 페르소나가 동시에 만족되는 이유
-- vibe coder가 `/launch` 한 번 누르면 → 시니어가 PR에서 다시 점검할 필요 없음
-- "AI Score 87/100" 같은 정량화는 둘 다에게 유효
+- forge로 작업 → 발견된 추가 이슈를 tag로 트래커에 → 다음 세션에서 strike로 해결
+- 두 surface가 한 사람의 일상 작업 루프에 자연스럽게 결합
 
-## 게임 모드: 영향력 + 카탈로그 하이브리드
+## 게임 모드: 리드 + 보조 + alpha utilities
 
-- **영향력 축 (의견 있는 핵심 스킬)**: `/launch`, `/polish`, `/auth-check` — 매일 외우는 슬로건이 됨
-- **카탈로그 축 (보조 스킬)**: 영역별 깊은 스킬 — v2.1, v2.2에서 누적
+- **리드 surface**: `/forge` — 저자가 매일 쓰는 development orchestrator. 모든 마케팅 메시지의 중심.
+- **2차 리드**: `/link` `/tag` `/strike` — Notion 트래커. forge와 함께 일상 루프 형성.
+- **Alpha utilities (off marketing surface)**: `/lock` `/launch` — v0.1 그대로 repo + 플러그인에 남되 README 헤드라인 밖. v2.1+에서 사용자 demand 보고 방향 결정.
 
-## 시장 규모 (추정)
+## 시장 규모 (재추정)
 
-- vibe coder 모집단: Lovable/v0/Bolt/Replit/Taskade 합산 **백만+ 빌더**
-- Production 의향: 10-15% = **10-15만 명 TAM**
-- Claude Code 플러그인 가격대 가정 시 잠재 매출 범위: **연 $10M-$50M** (5-10% 전환)
+- Claude Code 사용 개발자 모집단: 수십만+ (Anthropic 공식 통계 추정)
+- discipline-first orchestrator 의향: 10-20% = **수만 명 TAM**
+- Notion 사용 개발자: 수십만+
+- 두 surface가 겹치는 사용자: forge 사용자의 30-40%가 트래커도 사용 추정
+- Claude Code 플러그인 가격대 가정 시 잠재 매출 범위: **연 $5M-$30M** (5-10% 전환)
 
 ## 결정된 제약
 
 | 차원 | 결정 |
 |---|---|
 | 언어 | 글로벌 우선 (영어 README/이슈) + 한국어 부캐 (블로그/디스코드) |
-| 페이스 | 3-4개월 풀집중 |
-| 의존성 | superpowers / Matt Pocock 의존 제거 (자체 스킬셋) |
-| 이름 | mekaknight 유지 + 강한 서브타이틀 |
-| MVP | ~10개 스킬 (영역당 1-2개 + 우산 + lite 워크플로우) |
-| 트래커 | Notion + GitHub Issues + Linear 백엔드 확장, 깊은 통합 |
+| 페이스 | **1-2주 출시** (ADR 0004 narrow pivot — 새 코드 없음, 문서 + 영상만) |
+| 의존성 | superpowers / Matt Pocock 의존 제거 (ADR 0001 — self-contained orchestrator) |
+| 이름 | mekaknight 유지 |
+| **MVP** | **v2.0 marketing surface = forge + link + tag + strike**. lock + launch는 v0.1 alpha utilities (off marketing surface). polish / dedupe / cohesion-check는 v2.1+ candidates |
+| 트래커 백엔드 | Notion 단일 (v2.0). GitHub Issues / Linear 확장은 v2.1+ |
 
 ## TBD (산출물 작성 중 결정 필요)
 
 | 항목 | 결정 시점 |
 |---|---|
 | 영어 콘텐츠 작성 방식 (AI 보조 vs 직접) | v2-marketing.md |
-| 본업(i-screammedia) dogfooding 범위/사례 | v2-roadmap.md |
-| `/polish`의 Vision 모델 호출 비용/속도 | v2-skill-catalog.md |
-| `/launch` 판정 기준의 정량적 임계값 | v2-skill-catalog.md |
-| 트래커 백엔드 확장 시점 (v2.0 vs v2.1) | v2-roadmap.md |
-| 마케팅 채널 우선순위 (HN/PH/Reddit/Twitter) | v2-marketing.md |
+| forge 데모 영상의 실제 feature 선택 | Week 2 시작 |
+| tracker 데모 영상의 blob 샘플 (사내 정보 제거) | Week 2 시작 |
+| README footer에서 lock/launch 안내 톤 | Week 1 |
+| 한국어 부캐 채널 우선순위 (한국 디스코드 / 트위터 / 블로그) | v2-marketing.md |
 
 ## 위험과 완화
 
 | 위험 | 완화 |
 |---|---|
-| Anthropic이 통합 production-readiness 플러그인을 직접 출시 | 6-12개월 안에 카테고리 인지 굳히기. Anthropic의 인접 출시는 오히려 카테고리 검증 신호로 활용 |
-| 청중 0에서 시작 — 콘텐츠 마케팅 부담 | product-led growth, `/launch` 결과 자체가 공유되는 메커니즘 설계 |
-| 영어 콘텐츠 작성 자신감 부족 | README/이슈는 AI 보조, 트위터는 product 결과물 스크린샷 위주 |
-| superpowers / Matt Pocock 사용자의 "왜 또 다른 스킬?" 회의 | "그들이 안 하는 것" 명확화 — *그들은 개발 중, 우리는 출하 직전 게이트* |
-| mekaknight의 기존 4개 스킬 사용자에게 v2.0 전환 부담 | 트래커 스킬은 유지, workflow만 점진적 재설계, Major bump (2.0.0) 명시 |
+| superpowers / Matt Pocock 사용자의 "왜 또 다른 orchestrator?" 회의 | "self-contained, no plugin install" + "strict TDD + no-soft-language verification" — 그들이 명시적으로 가지지 않은 두 가지 |
+| Anthropic이 인접 Claude Code workflow 플러그인 직접 출시 | 1-2주 출시로 시간 단축. 이름 + 톤 차별화로 방어. Anthropic 출시는 카테고리 검증 신호로 활용 |
+| 청중 0에서 시작 — 콘텐츠 마케팅 부담 | product-led growth — forge 실제 세션 클립 + tracker 사용 흐름이 그 자체로 콘텐츠 |
+| lock/launch alpha utility 라벨이 "이거 왜 있냐" 질문 받음 | README footer 1 섹션 + ADR 0004 링크 — "출시 후 demand 보고 방향 결정" 투명 표기 |
+| 영어 콘텐츠 quality 낮음 → 신뢰 손상 | AI 보조 + 영어 native 본업 동료 1-2명 사전 검수 |
+| v0.1 → v2.0 marketing 전환 부담 | 트래커 스킬은 유지, lock + launch는 invocable 유지. Major bump (2.0.0) 명시 |
