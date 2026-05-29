@@ -246,14 +246,14 @@ Extract `rich_text[].plain_text` from each block in `.results[]` to compose the 
 
 ### 6b. Invoke workflow
 
-**Single issue** — invoke `jameskill:workflow` with:
+**Single issue** — invoke `jameskill:temper` with:
 ```
 [Issue title]
 
 [Issue body — text from block children]
 ```
 
-**Grouped issues (2+)** — invoke `jameskill:workflow` once for the entire group with a structured multi-issue prompt:
+**Grouped issues (2+)** — invoke `jameskill:temper` once for the entire group with a structured multi-issue prompt:
 ```
 Below are N related issues to handle together.
 
@@ -263,13 +263,13 @@ Below are N related issues to handle together.
 ## Issue 2: [P1] Logout doesn't clear session (page_id: yyy)
 [body]
 
-Derive the group's common context in Phase 0/1 (grill-me + grill-with-docs),
-but address every individual issue in Phase 3 (build) without omission.
+Derive the group's common context in Clarify,
+but address every individual issue in Build without omission.
 ```
 
-The workflow skill handles the full cycle: clarify (grill-me) → validate (grill-with-docs) → route (diagnose/prototype/PRD+Notion-issues/direct) → build (tdd) → architecture review → code review → verify.
+The temper skill handles the full cycle: clarify → route (direct/plan) → build-with-tests → peer-review → verify → finish.
 
-**If `jameskill:workflow` is not available:** Inform the user that the workflow skill is unavailable, then proceed with a standard brainstorming approach — present the issue context directly in the conversation and work through the solution interactively with the user.
+**If `jameskill:temper` is not available:** Inform the user that the temper skill is unavailable, then proceed with a standard brainstorming approach — present the issue context directly in the conversation and work through the solution interactively with the user.
 
 Once the workflow completes and the user confirms "done", proceed to Step 7.
 
