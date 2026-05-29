@@ -1,5 +1,5 @@
 {
-  "name": "jameskill-marketplace",
+  "name": "mekaknight-marketplace",
   "owner": {
     "name": "James Kyeong",
     "email": "jkyuk@i-screammedia.com"
@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "jameskill",
+      "name": "mekaknight",
       "source": {
         "source": "url",
         "url": "https://github.com/jameskyeong/jameskill.git"
