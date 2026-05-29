@@ -9,33 +9,25 @@
 <p align="center">
   <a href="#installation"><img src="https://img.shields.io/badge/install-claude%20plugin-1a1a1a?style=flat-square" alt="install" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1a1a1a?style=flat-square" alt="MIT" /></a>
-  <img src="https://img.shields.io/badge/skills-7-1a1a1a?style=flat-square" alt="7 skills" />
+  <img src="https://img.shields.io/badge/skills-6-1a1a1a?style=flat-square" alt="6 skills" />
 </p>
 
 ---
 
+<img align="right" src="docs/mekaknight-hero.jpg" width="220" alt="mekaknight character" />
+
 A small, opinionated set of skills that plug into Claude Code. Built around two ideas:
 
+- **A development flow that knows when to slow down** — clarify before designing, design before building, verify before claiming done.
 - **Issue tracking that reads like a problem statement, not a commit message** — titles and notes stay readable for PMs, support, customers.
-- **A workflow that knows when to slow down** — clarify before designing, design before building, verify before claiming done.
+
+<br clear="right" />
 
 ## Skills
 
-### 🗂  Issue Tracking
+### 🛠  Development Orchestrator
 
-Notion-backed issue lifecycle. From a Slack-pasted blob of bug reports to grouped, codebase-verified tickets — and back out into shippable fixes.
-
-| Command | Purpose |
-|---|---|
-| `/link` | One-time Notion connection — API key, database, property mapping, defaults |
-| `/tag` | Parse a prompt into issues, auto-group related items, verify against the codebase, create pages |
-| `/strike` | Pick a pending issue, brainstorm a fix, implement, update status with a human-readable outcome note |
-
-**Why it's different** — issue titles are written as user-visible problems, not git commit messages. Cross-functional readers (PMs, support, customers) can scan the tracker without engineering context.
-
-### 🛠  Workflow
-
-Self-contained development orchestrator. Takes raw requirements through a disciplined pipeline — clarify → build → review → verify → finish — without depending on any external skill plugins.
+Self-contained development pipeline. Takes raw requirements through a disciplined flow — clarify → build → review → verify → finish — without depending on any external skill plugins.
 
 | Command | Purpose |
 |---|---|
@@ -60,14 +52,28 @@ The router fans out by task type. **Tracker-free** — forge itself never reads 
 - "Done" is gated by no-soft-language verification — phrases like "should work" are banned in completion claims.
 - The branch finish is an explicit step (local merge / open PR / keep branch / discard) — not an afterthought.
 
-> v2.0 forge is self-contained — no Matt Pocock / superpowers dependency. See [ADR 0001](docs/adr/0001-self-contained-orchestrator.md) for the decision rationale. The v1.x workflow is preserved as `/workflow-external` for reference.
+> `forge` is self-contained — no external skill dependencies. See [ADR 0001](docs/adr/0001-self-contained-orchestrator.md) for the decision rationale.
 
-### 🔒  Security inspection + Launch verdict
+### 🔒  Security Inspection & Launch Verdict
+
+Catch the configuration-level holes static scanners miss, then aggregate findings into a single deploy decision.
 
 | Command | Purpose |
 |---|---|
 | `/lock` | Inspect a project for service-configuration security holes (Supabase RLS, secret-key client exposure, Stripe webhook signatures). Reports PASS/WARN/BLOCK with fix suggestions. |
 | `/launch` | One-line GO / NO-GO deploy verdict. Aggregates inspection findings into a single binary decision. |
+
+### 🗂  Issue Tracking
+
+Notion-backed issue lifecycle. From a Slack-pasted blob of bug reports to grouped, codebase-verified tickets — and back out into shippable fixes.
+
+| Command | Purpose |
+|---|---|
+| `/link` | One-time Notion connection — API key, database, property mapping, defaults |
+| `/tag` | Parse a prompt into issues, auto-group related items, verify against the codebase, create pages |
+| `/strike` | Pick a pending issue, brainstorm a fix, implement, update status with a human-readable outcome note |
+
+**Why it's different** — issue titles are written as user-visible problems, not git commit messages. Cross-functional readers (PMs, support, customers) can scan the tracker without engineering context.
 
 ## Installation
 
@@ -75,38 +81,6 @@ The router fans out by task type. **Tracker-free** — forge itself never reads 
 claude plugins marketplace add https://github.com/jameskyeong/mekaknight.git
 claude plugins install mekaknight
 ```
-
-## Migrating from v1.x
-
-v2.0.0-alpha.3 introduces a full rebrand and command rename. See [ADR 0002](docs/adr/0002-mekaknight-rebrand.md) for the rationale.
-
-**Brand**
-
-- Package: `jameskill` → `mekaknight`
-- Namespace: `/jameskill:*` → `/mekaknight:*`
-
-**Command mapping**
-
-| v1 | v2 |
-|---|---|
-| `/jameskill:temper` | `/mekaknight:forge` |
-| `/jameskill:harden` | `/mekaknight:lock` |
-| `/jameskill:ship-ready` | `/mekaknight:launch` |
-| `/jameskill:setup-issue` | `/mekaknight:link` |
-| `/jameskill:report-issue` | `/mekaknight:tag` |
-| `/jameskill:resolve-issue` | `/mekaknight:strike` |
-
-**Install change**
-
-```bash
-# v1
-claude plugins install jameskill
-
-# v2
-claude plugins install mekaknight
-```
-
-The v1.x legacy orchestrator remains available as `/mekaknight:workflow-external` for users who depended on the Matt Pocock + superpowers skill chain.
 
 ## Requirements
 
