@@ -1,19 +1,16 @@
 ---
 name: jameskill:workflow-external
 description: >-
-  Skill orchestrator combining Matt Pocock and superpowers, tracker-free and git-only.
-  Routes by task type — DIAGNOSE (bug), PROTOTYPE (exploration), PRD (large spec),
-  PLAN (medium plan), DIRECT (small TDD). Runs grill → route → build → architecture
-  → quality/security → independent code review → verify → finish. Use when:
-  'workflow', 'start working on', 'implement this', 'fix this', 'build this'.
-  Also invoked by resolve-issue after issue selection.
+  [Legacy v1.x] Skill orchestrator that depends on Matt Pocock and superpowers skills.
+  Preserved for reference. For the current self-contained orchestrator, use /jameskill:temper.
+  Use when: 'workflow-external', 'use v1 workflow', 'use external workflow'.
 ---
 
 # Workflow — Skill Orchestrator
 
 Orchestrates [Matt Pocock skills](https://github.com/mattpocock/skills) and [superpowers](https://github.com/obra/superpowers) into a complete development flow: understand the problem, build it right, review it independently, verify it works, and finish the branch cleanly.
 
-**Tracker-free.** This workflow has no external dependencies beyond git. All artifacts (specs, plans, PRDs, ADRs, CONTEXT.md) live in the repository. Cross-session work resumes by re-running `/jameskill:workflow` with the relevant plan or PRD file path as context.
+**Tracker-free.** This workflow has no external dependencies beyond git. All artifacts (specs, plans, PRDs, ADRs, CONTEXT.md) live in the repository. Cross-session work resumes by re-running `/jameskill:workflow-external` with the relevant plan or PRD file path as context.
 
 **Compound engineering guarantee:** Every workflow run improves domain docs, test coverage, and codebase structure — not just the immediate deliverable.
 
@@ -45,7 +42,7 @@ Skills may be installed as plugins, in `~/.claude/skills/`, or in `.claude/skill
 > - Matt Pocock skills — see [mattpocock/skills](https://github.com/mattpocock/skills) for installation instructions.
 > - superpowers — see [obra/superpowers](https://github.com/obra/superpowers) for installation instructions.
 >
-> Re-run `/jameskill:workflow` after installation completes.
+> Re-run `/jameskill:workflow-external` after installation completes.
 
 Proceed to Phase 0 only when all required skills are confirmed available.
 
@@ -210,7 +207,7 @@ After all tasks complete, proceed to **Phase 3.5** (skip Phase 3 — subagent-dr
 
 #### Cross-session pickup
 
-If the session ends mid-execution, the user resumes by running `/jameskill:workflow` with the plan file path as context. Phase 0 (grill-me) is skipped when the plan file already encodes the agreed problem statement. Re-invoking `subagent-driven-development` on the same plan picks up from incomplete tasks.
+If the session ends mid-execution, the user resumes by running `/jameskill:workflow-external` with the plan file path as context. Phase 0 (grill-me) is skipped when the plan file already encodes the agreed problem statement. Re-invoking `subagent-driven-development` on the same plan picks up from incomplete tasks.
 
 ### Route PLAN — Medium in-session feature → `writing-plans` → `subagent-driven-development`
 
@@ -445,7 +442,7 @@ The workflow itself never reads from or writes to Notion — `resolve-issue` han
 
 ### Standalone usage
 
-When invoked directly via `/jameskill:workflow`:
+When invoked directly via `/jameskill:workflow-external`:
 - User provides the problem/feature description as the argument (or a path to an existing PRD / plan file for resuming cross-session work)
 - All phases proceed normally
 - On completion, summarize what was done
@@ -456,5 +453,5 @@ When invoked directly via `/jameskill:workflow`:
 
 If the user interrupts at any phase:
 - Work completed in prior phases (docs updates, tests, code) persists in the working tree
-- The user can resume by running `/jameskill:workflow` again with the same context (or with the PRD / plan file path for Routes PRD / PLAN)
+- The user can resume by running `/jameskill:workflow-external` again with the same context (or with the PRD / plan file path for Routes PRD / PLAN)
 - No automatic state tracking — the user decides where to pick up
