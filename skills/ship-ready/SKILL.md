@@ -52,7 +52,7 @@ Blocking (2):
 Fix the blockers above, then run /jameskill:ship-ready again.
 
 Advisory (not blocking):
-  ⚠️  [Security] No webhook idempotency check — api/webhooks/stripe.ts
+  ⚠️  [Security] Stripe webhook parses JSON before signature verification — api/webhooks/stripe.ts:14
 ```
 
 **GO example:**
@@ -65,7 +65,16 @@ No blocking issues found.
 Advisory (not blocking):
   ⚠️  [Security] Public reference table `plans` has RLS off — confirm intentional
 
-Security checks passed. Safe to deploy.
+Security configuration checks passed.
+```
+
+If **every** check returned SKIP (the project uses neither Supabase nor Stripe, so nothing applicable ran), do not imply a clean bill of health:
+
+```
+🚦 SHIP READY?   GO  ✅
+
+No applicable security checks ran (no Supabase or Stripe usage detected).
+Nothing is blocking, but harden v0.1 had nothing to inspect in this project.
 ```
 
 ---

@@ -65,10 +65,19 @@ Look in `supabase/migrations/*.sql`, `schema.sql`, or Prisma/Drizzle schema file
 
 1. Build the set of tables that hold user data (names like `users`, `profiles`, `accounts`, `orders`, `messages`, `posts`, or any table with a `user_id`/`owner_id` column).
 2. For each, check whether `ALTER TABLE <t> ENABLE ROW LEVEL SECURITY;` appears.
-   - **No RLS enabled** on a user-data table → `❌ BLOCK`
-   - RLS enabled but **no `CREATE POLICY`** referencing it (RLS on with zero policies = all access denied OR, in practice, often paired with a permissive `USING (true)`) → inspect the policy:
-     - Policy with `USING (true)` or `USING (1=1)` on a user-data table → `❌ BLOCK` (effectively public)
-     - Policy that correctly scopes by `auth.uid()` → `✅ PASS`
+
+   **The verdict depends on which strategy produced the data:**
+
+   - **Strategy A (CLI `db dump` — authoritative):** the dump reflects the database's real state, including RLS enabled via the dashboard.
+     - No RLS on a user-data table → `❌ BLOCK` (confirmed off)
+     - RLS on, **zero policies** → `✅ PASS`. RLS with no policies *fails closed* (deny-all) — that is safe, not a hole. (Optionally `⚠️  WARN` only if the table is clearly meant to be readable and now isn't.)
+     - RLS on, policy `USING (true)` / `USING (1=1)` on a user-data table → `❌ BLOCK` (effectively public)
+     - RLS on, policy scoped by `auth.uid()` → `✅ PASS`
+
+   - **Strategy B (migration-file fallback — NOT authoritative):** RLS is very commonly enabled via the Supabase dashboard, which never appears in migration SQL. Absence of an `ENABLE ROW LEVEL SECURITY` statement does **not** prove RLS is off.
+     - No RLS statement found for a user-data table → `⚠️  WARN`: "RLS not found in migrations — confirm it's enabled in the Supabase dashboard." **Never BLOCK from Strategy B** — you cannot distinguish "off" from "set elsewhere".
+     - Policy `USING (true)` found in a migration on a user-data table → `❌ BLOCK` (an explicit public policy *is* authoritative even in Strategy B)
+
 3. Tables that are clearly public reference data (e.g. `countries`, `plans`, `categories`) with RLS off → `⚠️  WARN` (intentional is plausible, confirm with user).
 
 **Fix suggestion template:**
@@ -88,17 +97,20 @@ grep -rn "SUPABASE_SERVICE_ROLE_KEY\|service_role\|sk_live_\|sk_test_\|STRIPE_SE
   --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" \
   . 2>/dev/null | grep -v node_modules
 
-# The dangerous anti-pattern: secrets behind a PUBLIC env prefix
-grep -rn "NEXT_PUBLIC_[A-Z_]*\(SECRET\|SERVICE\|PRIVATE\|SK\)\|VITE_[A-Z_]*\(SECRET\|SERVICE\|SK\)\|PUBLIC_[A-Z_]*SECRET" \
+# The dangerous anti-pattern: secrets behind a PUBLIC env prefix.
+# Match SECRET / SERVICE_ROLE / PRIVATE / SERVICE_KEY — NOT bare "SK"
+# (SK substring-matches TASK, DISK, RISK, MASK — all valid public names).
+grep -rnE "(NEXT_PUBLIC_|VITE_|PUBLIC_)[A-Z_]*(SECRET|SERVICE_ROLE|SERVICE_KEY|PRIVATE_KEY|_SK_|_SK$)" \
   . 2>/dev/null | grep -v node_modules
 ```
 
 ### What to flag
 
-1. **`NEXT_PUBLIC_*` / `VITE_*` / `PUBLIC_*` env var whose name contains `SECRET`, `SERVICE`, `PRIVATE`, or `SK`** → `❌ BLOCK`. The public prefix forces the value into the client bundle.
+1. **`NEXT_PUBLIC_*` / `VITE_*` / `PUBLIC_*` env var whose name contains `SECRET`, `SERVICE_ROLE`, `SERVICE_KEY`, `PRIVATE_KEY`, or `SK` as a whole token (`_SK_` / `_SK`)** → `❌ BLOCK`. The public prefix forces the value into the client bundle. Do **not** flag names where `SK` is part of a word (`TASK`, `DISK`, `RISK`, `MASK`) — those are ordinary public vars.
 2. **A secret key (`sk_live_`, `sk_test_`, `SUPABASE_SERVICE_ROLE_KEY`, `service_role`) referenced in a file that is client-reachable** → `❌ BLOCK`.
-   - Client-reachable = a Client Component (`"use client"` at top), a file under `components/` / `app/` without server-only markers, or anything imported by such a file.
-   - Server-only contexts are safe: `app/api/**/route.ts`, files importing `server-only`, `getServerSideProps`, server actions. A secret in those → `✅ PASS`.
+   - **Client-reachable** = the file has `"use client"` at the top, OR is imported by such a file. In the Next.js App Router, components are Server Components *by default* — a secret in an ordinary `app/` or `components/` file with **no** `"use client"` directive is server-only and **safe** (`✅ PASS`). The discriminating signal is the *presence* of `"use client"`, not the absence of a server marker.
+   - **Server-only (safe → `✅ PASS`):** `app/api/**/route.ts`, files importing `server-only`, `getServerSideProps`, server actions, and any `app/` file without `"use client"`.
+   - **If you cannot trace whether a file reaches the client** (mixed import graph, unclear) → downgrade to `⚠️  WARN` with reason "can't confirm whether this file reaches the client bundle". Do not BLOCK on a guess.
 3. A hard-coded literal key (starts with `sk_live_`/`sk_test_` as a string literal, not an env reference) **anywhere** → `❌ BLOCK` (should be an env var regardless of context).
 
 **Fix suggestion template:**
