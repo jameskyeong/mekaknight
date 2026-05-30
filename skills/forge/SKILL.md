@@ -123,16 +123,16 @@ Based on Clarify output, determine the work's scope. **Only one route per run.**
 
 | Route | When | What happens next |
 |---|---|---|
-| **DIRECT** | Small, contained change. 1-4 commits, tightly-grouped files, no task dependencies. | Proceed directly to Build. |
+| **DIRECT** | Small, contained feature change. 1-4 commits, tightly-grouped files, no task dependencies. | Proceed directly to Build. |
 | **PLAN** | Medium feature. 5-15 commits, 2-4 files with shared state, tasks have dependencies. | Write plan file → user confirms → Docs checkpoint → sequential Build. |
+| **DIAGNOSE** | Bug-first work. Reproduction steps, error messages, "something is broken." | Reproduce → Minimize → Investigate → Fix → Regression-prevent. |
+| **PROTOTYPE** | Throwaway exploration. "How should this look", "try a few approaches", "I'm not sure which design fits." | Build variations with relaxed TDD → user review → Discard or Promote-to-Plan. |
 
 ### Unsupported routes
 
-If the work matches these patterns, inform the user and suggest alternatives:
+If the work matches this pattern, inform the user and suggest alternatives:
 
-- **Bug / diagnosis**: "This looks like a bug to diagnose. Consider using `mattpocock-skills:diagnose` for systematic root cause analysis, or describe the reproduction steps and I'll investigate directly."
-- **UI exploration / prototype**: "This needs design exploration. Consider using `mattpocock-skills:prototype` to try multiple approaches, or describe the constraints and I'll propose options."
-- **Large multi-session feature**: "This is large enough to need a PRD. Consider writing one in `docs/prd/` and breaking it into multiple `/forge` sessions, or use `superpowers:writing-plans` for structured planning."
+- **PRD-scale, multi-session feature**: "This is large enough to need a PRD. Consider writing one in `docs/prd/` and breaking it into multiple `/forge` sessions, each of which can be DIRECT or PLAN."
 
 ### Route: DIRECT
 
@@ -192,6 +192,36 @@ If a task is blocked or unclear, surface it to the user — do NOT improvise.
 #### Cross-session pickup
 
 If the session ends mid-execution, the user resumes by running `/forge` with the plan file path as argument. Clarify and Route are skipped — Build picks up from the first incomplete task.
+
+### Route: DIAGNOSE
+
+> **For the deeper discipline — why each step exists, hypothesis-driven investigation, anti-patterns (changing code without a hypothesis, hypothesis-shopping, fixing the test instead of the bug, declaring victory when the symptom disappears), and edge cases (cannot reproduce locally, intermittent bugs, production-only data, dependency bugs) — see [`references/diagnosis.md`](references/diagnosis.md).**
+
+Five steps, each with its own exit condition. The cross-cutting verification gate applies to every step.
+
+1. **Reproduce** — write a test that fails *because of the bug*. Run it. Observe the failure. The exit condition is that the failure points at the bug, not at setup or fixture issues.
+2. **Minimize** — trim the reproduction until the test exercises only the bug-causing surface. Removing more would make the test pass for the wrong reasons.
+3. **Investigate** — form a hypothesis stating what causes the bug and where. Read code (do NOT change code yet) to confirm or refute. Repeat until a hypothesis is confirmed by reading.
+4. **Fix** — minimum code change that makes the minimized test pass without breaking other tests. Standard GREEN discipline applies (see `references/tdd-discipline.md`).
+5. **Regression-prevent** — the minimized test enters the suite permanently, committed alongside the fix.
+
+After Regression-prevent, proceed to Peer-review → Verify → Finish exactly as DIRECT/PLAN routes do. The minimized test is the regression net; the diff is fix + test together.
+
+### Route: PROTOTYPE
+
+> **For the deeper discipline — why prototypes are throwaway by default, time-box and variation rules, the explicit user-review step, Discard vs Promote-to-Plan, anti-patterns (silent production drift, "while I'm here" production-grade work, no time-box, single approach as exploration, skipping review, Promote without restart), and edge cases (question turns out wrong, user wants to ship as-is, shared file conflicts) — see [`references/prototyping.md`](references/prototyping.md).**
+
+PROTOTYPE intentionally relaxes the TDD discipline that DIRECT/PLAN/DIAGNOSE enforce. The relaxation is scoped to this route and ends the moment a variation is Promoted.
+
+1. **Clarify the question** — state in one sentence what the prototype is answering. If it cannot be stated, return to Clarify.
+2. **Set a time-box** — explicit budget (typically 30 min - 1 day). When it expires, the route exits.
+3. **Build variations** — two or three meaningfully different approaches. No RED, no scope discipline at GREEN, no REFACTOR, no Peer-review subagent. Existing tests still must pass.
+4. **Present to user** — surface the variations side by side with observed trade-offs. The agent does not declare done.
+5. **User decides** — Discard (default), Promote variation N (kicks off a fresh PLAN run), or Re-Clarify (the original question was wrong).
+
+**Promote is a restart, not a continuation.** The chosen variation's code does not graduate; a fresh PLAN run takes the prototype's answer as input to its own Clarify, then authors production code with full discipline.
+
+After PROTOTYPE exits, the prototype branch is Discarded (per `references/finishing.md` Discard option) unless Promote replaced it with a new PLAN run.
 
 ---
 

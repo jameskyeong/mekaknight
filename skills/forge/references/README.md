@@ -11,6 +11,8 @@ See [ADR 0005](../../../docs/adr/0005-forge-depth-references.md) for the rationa
 | Preflight | _(inline in SKILL.md)_ | Mechanical environment check; no separate discipline |
 | **Clarify** | [`grilling.md`](grilling.md) | Ambiguity as load-bearing signal; one-question discipline; 5-category checklist deepened |
 | **Route → PLAN** | [`planning.md`](planning.md) | Plan file as contract; task sizing; dependencies; out-of-scope as scope guard |
+| **Route → DIAGNOSE** | [`diagnosis.md`](diagnosis.md) | Bug-first workflow: Reproduce → Minimize → Investigate → Fix → Regression-prevent |
+| **Route → PROTOTYPE** | [`prototyping.md`](prototyping.md) | Throwaway exploration; TDD intentionally relaxed; Discard vs Promote-to-Plan |
 | **Build** | [`tdd-discipline.md`](tdd-discipline.md) | RED/GREEN/REFACTOR exit conditions; anti-patterns; legacy / incidents / UI / integration edges |
 | **Peer-review** | [`peer-review.md`](peer-review.md) | Independence vs author bias; two-axis review; sharpened severity definitions |
 | Ship-check | _(slot, deferred)_ | Activates when production-readiness skills are wired in |
@@ -43,8 +45,6 @@ If you are auditing a completed `/forge` run, the relevant module is the one for
 
 Tracked in `docs/plans/forge-depth-references-vN.md`. Currently open:
 
-- `diagnosis.md` — gated on a decision to add a `DIAGNOSE` route to forge.
-- `prototyping.md` — gated on a decision to promote prototype work from unsupported to supported.
-- `architecture.md` — gated on a decision to promote architecture work similarly.
+- `architecture.md` — gated on a decision to promote PRD-scale architecture work to a supported route. ADR 0006 rejected ARCHITECT for v2.0 because PRD-level work overlaps with the existing tracker (`/strike`, `/tag`) and exceeds forge's single-session responsibility scope. Revisitable if post-launch usage signals demand.
 
 These modules will not be added until forge has a phase that consumes them. A module with no caller is documentation orphan; the references folder exists to back forge's orchestration, not to host orphaned discipline.

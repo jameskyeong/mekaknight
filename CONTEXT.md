@@ -32,6 +32,14 @@ _Avoid_: simple, small (subjective)
 A **forge** routing decision for medium-scope features (5-15 commits, 2-4 files with shared state). Produces a plan file in `docs/plans/` before sequential task execution.
 _Avoid_: roadmap, spec (different things)
 
+**DIAGNOSE**:
+A **forge** routing decision for bug-first work. Five steps: Reproduce (write a test that fails because of the bug) → Minimize (trim until the test exercises only the bug-causing surface) → Investigate (hypothesis-driven code reading) → Fix (standard GREEN discipline) → Regression-prevent (the minimized test stays in the suite permanently). The minimized reproduction test is the regression net. See [ADR 0006](docs/adr/0006-forge-route-expansion.md).
+_Avoid_: debug, troubleshoot (too vague — DIAGNOSE is the route name with a specific phase order)
+
+**PROTOTYPE**:
+A **forge** routing decision for throwaway exploration ("which design fits", "try a few approaches"). TDD is intentionally relaxed; two or three meaningfully different variations are built within a time-box; the user reviews and chooses Discard (default), Promote-to-Plan (kicks off a fresh PLAN run on the chosen variation), or Re-Clarify (the question was wrong). Prototype code does not graduate to production — Promote means restart with full discipline. See [ADR 0006](docs/adr/0006-forge-route-expansion.md).
+_Avoid_: spike (too informal — PROTOTYPE has explicit phase order and exit gate), POC (overloaded term)
+
 ### Inspection
 
 **Lock**:
