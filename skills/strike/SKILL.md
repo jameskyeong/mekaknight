@@ -267,7 +267,7 @@ Derive the group's common context in Clarify,
 but address every individual issue in Build without omission.
 ```
 
-The forge skill handles the full cycle: clarify → route (direct/plan) → build-with-tests → peer-review → verify → finish.
+The forge skill handles the full cycle: clarify → route → build-with-tests → peer-review → verify → finish. The router picks DIRECT/PLAN for feature work, DIAGNOSE for bug-shaped issues (reproduction steps, error messages), or PROTOTYPE for design-exploration issues — Clarify shapes which.
 
 **If `mekaknight:forge` is not available:** Inform the user that the forge skill is unavailable, then proceed with a standard brainstorming approach — present the issue context directly in the conversation and work through the solution interactively with the user.
 

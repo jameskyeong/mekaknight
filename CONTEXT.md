@@ -7,7 +7,7 @@ Claude Code plugin that provides production-readiness skills for AI-built apps. 
 ### Orchestration
 
 **Forge**:
-The development orchestrator skill (`/mekaknight:forge`). Takes raw requirements through a disciplined pipeline — clarify → build → review → verify → finish — to produce production-grade code. Named after the act of forging at the anvil: each phase hammers the code into shape, one strike at a time.
+The development orchestrator skill (`/mekaknight:forge`). Takes raw requirements through a disciplined pipeline — clarify → route → build → review → verify → finish — to produce production-grade code. The router branches 4-way: **DIRECT** / **PLAN** for feature work, **DIAGNOSE** for bugs, **PROTOTYPE** for throwaway exploration. Named after the act of forging at the anvil: each phase hammers the code into shape, one strike at a time.
 _Avoid_: workflow (ambiguous — see Flagged Ambiguities), temper (v1 name, retired)
 
 **Production-readiness gate**:

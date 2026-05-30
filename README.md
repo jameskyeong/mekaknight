@@ -41,8 +41,10 @@ The router fans out by task type. **Tracker-free** — forge itself never reads 
 
 | Route | When | Path |
 |---|---|---|
-| **DIRECT** | Small, contained change (1-4 commits, tightly-grouped files) | Build immediately, no plan file |
+| **DIRECT** | Small, contained feature change (1-4 commits, tightly-grouped files) | Build immediately, no plan file |
 | **PLAN** | Medium feature (5-15 commits, 2-4 files with shared state) | Plan file → user confirms → sequential build |
+| **DIAGNOSE** | Bug-first work — reproduction steps, error messages, "something is broken" | Reproduce → Minimize → Investigate → Fix → Regression-prevent |
+| **PROTOTYPE** | Throwaway exploration — "how should this look", "try a few approaches" | Build variations with relaxed TDD → user review → Discard or Promote-to-Plan |
 
 **What's different from a plain TDD chain**
 
