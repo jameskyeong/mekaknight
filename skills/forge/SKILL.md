@@ -1,9 +1,12 @@
 ---
 name: mekaknight:forge
 description: >-
-  Self-contained development orchestrator: clarify → build-with-tests → verify → finish.
+  Self-contained development orchestrator: clarify → route → build-with-tests → review → verify → finish.
+  4-way router (DIRECT/PLAN for features, DIAGNOSE for bugs, PROTOTYPE for throwaway exploration).
   Strict TDD, relentless clarification, no-soft-language verification at every phase boundary.
-  Use when: 'forge', 'start working on', 'implement this', 'fix this', 'build this'.
+  Use when: 'forge', 'start working on', 'implement this', 'build this' (feature),
+  'fix this', 'debug this', 'diagnose this' (DIAGNOSE),
+  'prototype this', 'try a design', 'explore options' (PROTOTYPE).
   Also invoked by strike after issue selection.
 ---
 

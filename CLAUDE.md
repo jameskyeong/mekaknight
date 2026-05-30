@@ -4,7 +4,7 @@ Notion issue tracker integration for Claude Code.
 
 ## Available Skills
 
-- `/forge` — Self-contained development orchestrator: clarify → build-with-tests → verify → finish. Strict TDD, relentless clarification, no-soft-language verification at every phase boundary.
+- `/forge` — Self-contained development orchestrator: clarify → route → build-with-tests → review → verify → finish. 4-way router (DIRECT/PLAN for features, DIAGNOSE for bugs, PROTOTYPE for throwaway exploration). Strict TDD, relentless clarification, no-soft-language verification at every phase boundary.
 - `/lock` — Inspect a project for service-configuration security holes (Supabase RLS gaps, secret-key client exposure, missing webhook signature verification). Reports PASS/WARN/BLOCK with fix suggestions.
 - `/launch` — One-line GO / NO-GO deploy verdict. Aggregates inspection findings (currently `/lock`) into a single binary decision.
 - `/tag` — Report issues to a Notion database. Parses prompts, verifies against codebase, creates pages with proper template blocks.
