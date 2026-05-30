@@ -14,7 +14,9 @@ Inspects **the current project** for service-configuration security holes that c
 
 **What this is NOT:** This does not scan for code-level vulnerabilities like XSS or SQL injection — that's semgrep's job. Lock catches the *configuration* mistakes that pattern scanners cannot see: a database table left world-readable, a secret key bundled into the browser, a payment webhook that trusts forged requests.
 
-**Target:** the project in the current working directory (a user's app — typically Next.js + Supabase + Stripe), not mekaknight itself.
+**Target:** the project in the current working directory (a user's app), not mekaknight itself.
+
+**Framework assumption (v0.1):** Detection heuristics assume a **Next.js-style client/server boundary** — specifically the `"use client"` paradigm for the secret-key check, and Stripe webhook handlers as Next.js API routes. Projects on SvelteKit, Nuxt, Remix, or other frameworks may receive false PASSes on secret-key exposure (the heuristic won't match their client markers) — manual review is recommended for those stacks until framework-specific detection lands. Supabase RLS and webhook-signature checks are framework-agnostic.
 
 **v0.1 scope:** 3 checks. Five more checks (Clerk/NextAuth env strength, frontend-only auth, raw-body parse order, plan-limit enforcement, webhook idempotency) arrive in v0.2.
 

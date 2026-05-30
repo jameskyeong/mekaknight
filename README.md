@@ -16,15 +16,17 @@
 
 <img align="right" src="docs/mekaknight-hero.jpg" width="220" alt="mekaknight character" />
 
-The signature skill is **`/forge`** — a self-contained development orchestrator. Tell it what you want; it drives the full flow: clarify → route → build with strict TDD → peer-review → verify → finish. One command, one entry point, no external skill chain to remember.
+Built on two pillars: **`/forge`** — a self-contained development orchestrator that drives the full flow from one command — and **compound engineering** baked into the structure, so every session deposits artifacts that lift the next one.
 
 The rest (issue tracking, inspection) are opt-in utilities — supplementary, not required.
 
 <br clear="right" />
 
-## How `/forge` is different
+## How `/forge` is different from other skill packs
 
-Most skill packs hand you a toolbox of discrete disciplines and ask you to remember which one to invoke when. `/forge` inverts that:
+Most skill packs (superpowers, Matt Pocock, etc.) hand you a toolbox of discrete disciplines and ask you to remember which one to invoke when. Each invocation starts fresh. `/forge` inverts both halves:
+
+### Pillar 1 — One command, smart pipeline
 
 1. **One command, full pipeline.** You type `/forge` (or `/forge fix the login bug`). Forge runs the whole flow — you never pick which sub-skill to call next.
 2. **Auto-routing by intent.** After Clarify, forge *infers* what kind of work this is and picks one of 4 routes. You don't choose; it decides.
@@ -32,6 +34,22 @@ Most skill packs hand you a toolbox of discrete disciplines and ask you to remem
 4. **No-soft-language verification.** Every phase boundary rejects "should work", "seems fine", "looks good". Verification means running the command and observing the output.
 5. **Tracker-free core.** Forge itself never reads or writes Notion. Issue tracking is a separate, opt-in surface.
 6. **Self-contained.** Zero dependency on superpowers, Matt Pocock, or any other skill pack — every discipline lives inside `skills/forge/references/`. See [ADR 0001](docs/adr/0001-self-contained-orchestrator.md).
+
+### Pillar 2 — Compound engineering, built in
+
+Other skill packs give you discipline *per invocation* — each session starts fresh, learnings evaporate when the session ends. `/forge` is structurally designed so every session deposits durable artifacts in your repo that lift the next session. **Five channels, all automated:**
+
+| Channel | How forge deposits | What compounds |
+|---|---|---|
+| **Plan files** | Auto — PLAN route writes `docs/plans/<feature>.md` | Resumable contracts. `/forge docs/plans/<feature>.md` re-enters from the first incomplete task across sessions. |
+| **Regression tests** | Auto — DIAGNOSE route adds the *minimized* reproduction test to the suite permanently | Bugs compound into protection. The net grows with every fix. |
+| **ADRs** | Auto-prompted — **Retrospective phase** proposes an ADR when an architectural choice was made | Decision history accumulates in `docs/adr/`. Future sessions know *why*. |
+| **Discipline references** | Auto-prompted — Retrospective proposes a `references/<phase>.md` append when a new failure mode surfaces | In-repo, editable discipline that grows with the project. Not vendor-locked. |
+| **Domain glossary** | Auto-prompted — Retrospective proposes a CONTEXT.md entry when new terminology was introduced | Language stays consistent across sessions and contributors. |
+
+The Retrospective phase runs between Verify and Finish, checks each channel against a threshold, and proposes deposits one at a time. Silent exit when no channel qualifies — performative deposits are explicitly rejected. See [ADR 0007](docs/adr/0007-retrospective-phase.md).
+
+> Your repo gets *easier to work in* over time. That's the compound part.
 
 ## `/forge` — Development Orchestrator
 
@@ -55,15 +73,16 @@ After Clarify, forge picks **one** route based on the kind of work. Each route i
 ### Phases at a glance
 
 ```
-preflight → clarify → route → build (strict TDD) → peer-review → ship-check (slot) → verify → finish
+preflight → clarify → route → build (strict TDD) → peer-review → ship-check (slot) → verify → retrospective → finish
 ```
 
 - **Relentless clarification** — the 5-category ambiguity checklist must reach 0 items before Route.
 - **Strict TDD** — RED → GREEN → REFACTOR for every unit. No skipped tests, no commented-out tests, no "TODO: add test later".
 - **Independent peer-review subagent** — fresh perspective on the diff, free from author recency bias.
+- **Retrospective** — proposes ADR / references / CONTEXT.md deposits when the session produced learnings worth keeping. Silent exit otherwise.
 - **Branch finish is explicit** — local merge / open PR / keep branch / discard. Not an afterthought.
 
-> Decision history: [ADR 0001](docs/adr/0001-self-contained-orchestrator.md) (self-contained), [ADR 0005](docs/adr/0005-forge-depth-references.md) (depth via references), [ADR 0006](docs/adr/0006-forge-route-expansion.md) (DIAGNOSE + PROTOTYPE).
+> Decision history: [ADR 0001](docs/adr/0001-self-contained-orchestrator.md) (self-contained), [ADR 0005](docs/adr/0005-forge-depth-references.md) (depth via references), [ADR 0006](docs/adr/0006-forge-route-expansion.md) (DIAGNOSE + PROTOTYPE), [ADR 0007](docs/adr/0007-retrospective-phase.md) (Retrospective).
 
 ---
 
@@ -75,8 +94,10 @@ Ships in v2.0 but not the v2.0 headline — the author doesn't use them daily an
 
 | Command | What it does |
 |---|---|
-| `/lock` | v0.1 inspection for Supabase RLS gaps, secret-key client exposure, missing Stripe webhook signatures |
+| `/lock` | v0.1 inspection for Supabase RLS gaps, secret-key client exposure (Next.js `"use client"` paradigm), missing Stripe webhook signatures |
 | `/launch` | v0.1 GO / NO-GO deploy verdict aggregating lock's findings |
+
+> **Framework note**: lock's secret-key check assumes a Next.js-style client/server boundary. SvelteKit / Nuxt / Remix may receive false PASSes on that specific check — manual review recommended for those stacks until framework-specific detection lands.
 
 ### 🗂 Notion issue tracking (optional integration)
 

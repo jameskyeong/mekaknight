@@ -64,7 +64,7 @@ Identify candidate items:
 
 ### 2-2. Auto-grouping (when 2+ candidates)
 
-Cluster items by affinity. Combine signals from all three dimensions:
+Follow the canonical algorithm in [`../issue-references/grouping.md`](../issue-references/grouping.md). Summary:
 
 | Dimension | Examples |
 |---|---|
@@ -72,9 +72,11 @@ Cluster items by affinity. Combine signals from all three dimensions:
 | **Technical system** | auth module, search API, canvas rendering |
 | **Fix type** | text/copy changes, sizing adjustments, missing loading state |
 
-Items that share at least one dimension may be grouped. Items that don't fit any group remain standalone.
+**Linkability rule**: a pair of items is linkable if it shares **2 or more of the 3 dimensions**, OR if it has **code-file overlap** (a single strong signal — see Section 2.5). One dimension alone is NOT enough.
 
-**Codebase verification (Section 2.5) feeds into grouping** — if two items touch the same file or module, they belong together.
+Then compute connected components: each component with 2+ items = one group; singletons = standalone.
+
+**Codebase verification (Section 2.5) feeds into grouping** — code-file overlap alone is sufficient to link a pair.
 
 ### 2-3. Group → Issue mapping
 
@@ -89,7 +91,7 @@ Each group becomes **one Notion issue**:
 
 ### 2-4. Flow
 
-Auto-group → **show grouping summary** → **proceed directly to registration** (no confirmation wait). The user can correct in a follow-up message if needed.
+Auto-group → **show grouping summary with one-line rationale per group** → **user confirms or overrides** (`y` / `regroup` / `split N` / `merge N,M`) → registration. See the User-gate section of [`grouping.md`](../issue-references/grouping.md) for override semantics.
 
 Example output before registration:
 

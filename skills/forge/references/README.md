@@ -17,6 +17,7 @@ See [ADR 0005](../../../docs/adr/0005-forge-depth-references.md) for the rationa
 | **Peer-review** | [`peer-review.md`](peer-review.md) | Independence vs author bias; two-axis review; sharpened severity definitions |
 | Ship-check | _(slot, deferred)_ | Activates when production-readiness skills are wired in |
 | **Verify** (cross-cutting) | [`verification.md`](verification.md) | Evidence before assertion; expanded forbidden language; per-phase evidence catalog |
+| **Retrospective** | [`retrospective.md`](retrospective.md) | Compound-engineering deposit at session end — three channels (ADR / references / CONTEXT.md), per-channel thresholds, performative-deposit anti-patterns |
 | **Finish** | [`finishing.md`](finishing.md) | The four branch options sharpened; commit discipline; git-safety anti-patterns |
 | _Cross-cutting_ | [`subagent-patterns.md`](subagent-patterns.md) | When and how to dispatch subagents without abdicating responsibility |
 

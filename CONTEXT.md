@@ -22,6 +22,16 @@ _Avoid_: check, validation (too vague)
 The modular library at `skills/forge/references/`. Each module deepens one forge phase (or one cross-cutting concern) — principles, anti-patterns, edge cases — so forge's depth does not depend on external skills. `SKILL.md` is the orchestrator; each phase carries a pointer to its reference. See [ADR 0005](docs/adr/0005-forge-depth-references.md) for the rationale.
 _Avoid_: helpers, support files (too vague — these are load-bearing discipline)
 
+**Retrospective**:
+The forge phase that runs between **Verify** and **Finish** to deposit this session's learnings into the repo's compound-engineering channels. Checks three channels in order — ADR (`docs/adr/`), discipline references (`skills/forge/references/`), CONTEXT.md domain glossary — and proposes a deposit only when the channel's threshold is met. Silent exit is the expected outcome for routine small changes; the phase is successful when it correctly identifies that no deposit is needed. See [ADR 0007](docs/adr/0007-retrospective-phase.md) and [`references/retrospective.md`](skills/forge/references/retrospective.md).
+_Avoid_: documentation phase (Retrospective is for compounding artifacts, not user-facing docs), post-mortem (post-mortems are for failures; Retrospective runs on green Verify), wrap-up (too vague — Retrospective has explicit per-channel thresholds).
+
+### Positioning
+
+**Compound engineering**:
+The architectural principle — the second of mekaknight's two pillars alongside the **forge** orchestrator — that each session must deposit durable artifacts in the repo so future sessions start ahead. The five compounding channels and how they fill: **plan files** in `docs/plans/` (auto, PLAN route), **DIAGNOSE regression tests** in the test suite (auto, DIAGNOSE route), **ADRs** in `docs/adr/` (auto-prompted by Retrospective phase, Channel 1), **discipline references** in `skills/forge/references/` (auto-prompted by Retrospective, Channel 2), **CONTEXT.md** domain glossary (auto-prompted by Retrospective, Channel 3). Distinguishes mekaknight from per-invocation discipline libraries (superpowers, Matt Pocock skills) where learnings evaporate at session end. Deeper process-learning compounding (DIRECT-route Clarify-answer reuse, Peer-review meta-pattern extraction, cross-session retrospective accumulation) is **open work** — out of scope for v2.0 per ADR 0007's status note.
+_Avoid_: continuous integration (overloaded term), AI feedback loop (too vague — compound engineering specifically means artifact deposit into the repo), context engineering (different — that's about runtime prompt assembly, not durable repo artifacts).
+
 ### Routing
 
 **DIRECT**:

@@ -1,9 +1,10 @@
 ---
 name: mekaknight:forge
 description: >-
-  Self-contained development orchestrator: clarify → route → build-with-tests → review → verify → finish.
+  Self-contained development orchestrator: clarify → route → build-with-tests → review → verify → retrospective → finish.
   4-way router (DIRECT/PLAN for features, DIAGNOSE for bugs, PROTOTYPE for throwaway exploration).
   Strict TDD, relentless clarification, no-soft-language verification at every phase boundary.
+  Retrospective phase proposes compound-engineering deposits (ADR / references / CONTEXT.md) before Finish.
   Use when: 'forge', 'start working on', 'implement this', 'build this' (feature),
   'fix this', 'debug this', 'diagnose this' (DIAGNOSE),
   'prototype this', 'try a design', 'explore options' (PROTOTYPE).
@@ -57,6 +58,7 @@ The following phrases are **banned** in any completion claim. If you catch yours
 | Peer-review | Every Critical/Important finding addressed or explicitly user-deferred |
 | Ship-check | (stub — skip until activated) |
 | Verify | lint + typecheck + test + architecture review all green — output observed |
+| Retrospective | Each qualifying channel (ADR / references / CONTEXT.md) reached an explicit user decision — accepted, edited, or rejected |
 | Finish | git status confirms clean state after commit |
 
 ---
@@ -361,6 +363,90 @@ For now, proceed directly to Verify.
 - Every check above is green — **output directly observed for each**.
 - No warnings treated as acceptable without explicit justification.
 - The phrase "all checks pass" may only be used after listing what was run and what the output was.
+
+---
+
+## Retrospective: Deposit compounding artifacts
+
+**Goal:** Capture this session's learnings into the repo's compound-engineering channels so future sessions start ahead.
+
+> **For the deeper discipline — why three explicit channels, per-channel thresholds (when to propose vs stay silent), proposal formats, anti-patterns (performative deposit, paraphrasing SKILL.md, ADR for a bug fix, batch-style proposals), and edge cases (multi-session plans, strike-caller integration, PROTOTYPE Discard/Promote, no-deposit sessions) — see [`references/retrospective.md`](references/retrospective.md).**
+
+Run after Verify exits green, before Finish. Check three channels in order. For each, propose a deposit *only if* its threshold is met. Do not invent deposits to make the phase feel productive — silent exit is the correct outcome when no channel qualifies.
+
+### Channel 1: ADR (`docs/adr/`)
+
+**Threshold**: An architectural choice was made whose *reasoning* will be valuable to a future session asking "why did we do it this way?"
+
+If met, propose:
+
+```
+ADR proposal: <short title>
+
+Context: <constraint or trigger>
+Decision: <what was chosen>
+Considered options: <brief list of alternatives>
+Consequences: <follow-on implications>
+
+Save to docs/adr/NNNN-<slug>.md? [y/edit/n]
+```
+
+Next ADR number = `ls docs/adr/ | wc -l + 1`, kebab-case slug.
+
+Not an ADR: bug fixes, obvious implementation details, refactors that follow existing patterns, decisions already documented.
+
+### Channel 2: Discipline references (`skills/forge/references/`)
+
+**Threshold**: A phase revealed a new failure mode, anti-pattern, edge case, or recurring issue *that the existing reference does not already cover*.
+
+If met, propose:
+
+```
+Reference update proposal: references/<phase>.md
+
+Section: <existing or "new section: <name>">
+Content: <draft paragraph — concrete, with enough context to be useful out of session>
+
+Append? [y/edit/n]
+```
+
+Not a reference update: one-off mistakes, paraphrases of existing content, findings already documented.
+
+### Channel 3: CONTEXT.md domain glossary
+
+**Threshold**: A term was introduced, redefined, or contested during this session, and future contributors will need to use it consistently.
+
+If met, propose:
+
+```
+CONTEXT.md glossary proposal:
+
+Term: <name>
+Section: <existing or "new section: <name>">
+
+Entry:
+**<Term>**:
+<definition>
+_Avoid_: <one or two confusable terms>
+
+Append? [y/edit/n]
+```
+
+Not a glossary update: existing entries, throwaway phrases, standard programming terms with no project-specific meaning.
+
+### Phase mechanics
+
+1. **Check each channel silently first** — decide whether the threshold is met. If no, do not surface the channel.
+2. **Propose one at a time** — never batch. Each gets independent accept/edit/reject.
+3. **Write immediately on accept** — the agent creates or appends the file and `git add`s it so the deposit lands in the same commit as the implementation.
+4. **Silent exit is success** — if no channel qualifies, exit with a one-line note: *"Retrospective: no compounding-worthy artifacts this session."*
+
+### Exit gate
+
+- Every qualifying channel reached an explicit user decision (`y`, `edit-then-y`, or `n`).
+- Accepted deposits are written to disk and staged.
+- If no channels qualified, the one-line note is recorded.
+- No invented deposits — performative compounding is rejected.
 
 ---
 

@@ -181,12 +181,12 @@ Accept these selection formats:
 
 ### 5b. Propose groups (multi-issue only)
 
-When 2+ issues are selected, **propose groupings** based on title/body similarity before starting work.
+When 2+ issues are selected, **propose groupings** before starting work. Follow the canonical algorithm in [`../issue-references/grouping.md`](../issue-references/grouping.md):
 
-Analyze the selected issues and cluster by domain affinity:
-- Same UI area (e.g. drawing tools, puzzle, activity review)
-- Same technical system (e.g. video recording, canvas rendering)
-- Same type of fix (e.g. copy/text changes, sizing adjustments)
+- Three dimensions: same **UI area** (e.g. drawing tools, puzzle, activity review), same **technical system** (e.g. video recording, canvas rendering), same **fix type** (e.g. copy/text changes, sizing adjustments).
+- **Linkability rule**: a pair links if it shares **2 or more of 3 dimensions**, OR has **code-file overlap**. One dimension alone is NOT enough.
+- Compute connected components; each = one group; singletons = standalone.
+- **Cross-status grouping is forbidden** — partition the selection by status first (in-progress / pending / waiting), then group within each partition.
 
 Present proposed groups sorted by max severity within each group:
 
@@ -209,10 +209,17 @@ The selected N issues will be grouped as follows:
 🔧 Group 4 — Standalone
   • [P1] Update the closing message text
 
-Proceed with this grouping? (Reply with adjustments if needed)
+Proceed with this grouping? (y / regroup / split N / merge N,M)
 ```
 
-Wait for user confirmation or adjustment. If only 1 issue is selected, skip grouping and proceed directly.
+Override semantics (per [`grouping.md`](../issue-references/grouping.md) User-gate section):
+
+- `y` / Enter → commit grouping; proceed to 5c.
+- `regroup` → re-run with stricter threshold (all 3 dimensions OR code-file overlap required).
+- `split N` → break group N into its members as standalone.
+- `merge N,M` → force-merge groups N and M.
+
+If only 1 issue is selected, skip grouping and proceed directly.
 
 ### 5c. Change status
 
@@ -300,13 +307,21 @@ EXISTING_REASON=$(curl -s "https://api.notion.com/v1/pages/${PAGE_ID}" \
   -H "Notion-Version: 2022-06-28" \
   | jq -r --arg reason "$REASON_PROP" '.properties[$reason].rich_text[0].plain_text // ""')
 
-NEW_REASON="${EXISTING_REASON:+$EXISTING_REASON\n}[Outcome] content..."
+# Use an actual newline ($'\n') as separator — not literal "\n" — so jq encodes it correctly.
+NL=$'\n'
+NEW_REASON="${EXISTING_REASON:+$EXISTING_REASON$NL}[Outcome] content..."
+
+# Build the payload with jq so any quotes, backslashes, or newlines in EXISTING_REASON or REASON_PROP are safely escaped.
+PAYLOAD=$(jq -n \
+  --arg prop "$REASON_PROP" \
+  --arg content "$NEW_REASON" \
+  '{properties: {($prop): {rich_text: [{text: {content: $content}}]}}}')
 
 curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
   -H "Authorization: Bearer $NOTION_KEY" \
   -H "Notion-Version: 2022-06-28" \
   -H "Content-Type: application/json" \
-  -d '{"properties": {"'"$REASON_PROP"'": {"rich_text": [{"text": {"content": "'"$NEW_REASON"'"}}]}}}'
+  -d "$PAYLOAD"
 ```
 
 ### 7b. Status change (all issues in the group)
@@ -314,11 +329,16 @@ curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
 Change the status to **Ready to Deploy** for every issue in the group.
 
 ```bash
+PAYLOAD=$(jq -n \
+  --arg prop "$STATUS_PROP" \
+  --arg name "$DEPLOY_STATUS" \
+  '{properties: {($prop): {select: {name: $name}}}}')
+
 curl -s -X PATCH "https://api.notion.com/v1/pages/${PAGE_ID}" \
   -H "Authorization: Bearer $NOTION_KEY" \
   -H "Notion-Version: 2022-06-28" \
   -H "Content-Type: application/json" \
-  -d '{"properties": {"'"$STATUS_PROP"'": {"select": {"name": "'"$DEPLOY_STATUS"'"}}}}'
+  -d "$PAYLOAD"
 ```
 
 Notify the user upon completion with a per-issue summary:

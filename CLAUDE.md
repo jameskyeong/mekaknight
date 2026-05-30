@@ -1,10 +1,15 @@
 # mekaknight
 
-Developer productivity skills for Claude Code. The signature skill is **`/forge`** — a self-contained development orchestrator. The other skills (issue tracking, inspection) are supplementary utilities you can opt into.
+Developer productivity skills for Claude Code. Built on two pillars:
+
+1. **`/forge`** — signature skill. Self-contained development orchestrator with auto-routing. One command drives the full flow.
+2. **Compound engineering** — every session deposits durable artifacts in the repo across five channels: plan files (auto, PLAN route), regression tests (auto, DIAGNOSE route), ADRs / discipline references / CONTEXT.md domain glossary (auto-prompted by the Retrospective phase). The codebase gets *easier to work in* over time. Distinguishes mekaknight from per-invocation discipline libraries like superpowers.
+
+The other skills (issue tracking, inspection) are supplementary utilities you can opt into.
 
 ## Signature skill
 
-- **`/forge`** — Self-contained development orchestrator: clarify → route → build-with-tests → review → verify → finish. 4-way router (DIRECT/PLAN for features, DIAGNOSE for bugs, PROTOTYPE for throwaway exploration). Strict TDD, relentless clarification, no-soft-language verification at every phase boundary. **Tracker-free** — never reads or writes Notion.
+- **`/forge`** — Self-contained development orchestrator: clarify → route → build-with-tests → review → verify → **retrospective** → finish. 4-way router (DIRECT/PLAN for features, DIAGNOSE for bugs, PROTOTYPE for throwaway exploration). Strict TDD, relentless clarification, no-soft-language verification at every phase boundary. Retrospective proposes ADR / references / CONTEXT.md deposits when the session produced learnings worth keeping. **Tracker-free** — never reads or writes Notion.
 
 ## Supplementary skills
 
