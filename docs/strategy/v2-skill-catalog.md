@@ -44,22 +44,27 @@ v2.0 marketing surface는 **forge + link + tag + strike** 4개. polish / dedupe 
 
 ## 🛠 forge — 개발 orchestrator (리드 스킬)
 
-**역할**: **mekaknight v2.0의 리드 surface.** clarify → build-with-tests → verify → finish 의 4단계 self-contained orchestrator. superpowers / Matt Pocock 같은 외부 스킬에 의존하지 않음 (ADR 0001).
+**역할**: **mekaknight v2.0의 리드 surface.** preflight → clarify → route → build-with-tests → peer-review → ship-check (slot) → verify → retrospective → finish 의 self-contained orchestrator. 4-way router (DIRECT/PLAN/DIAGNOSE/PROTOTYPE)가 의도에 따라 phase shape를 분기. superpowers / Matt Pocock 같은 외부 스킬에 의존하지 않음 (ADR 0001, 0005, 0006, 0007).
 
 **워크플로**:
 
 ```
-1. clarify   — relentless question-asking until requirements are crisp
-2. build-with-tests — strict TDD (red → green → refactor), no implementation without failing test
-3. verify    — no-soft-language verification at every phase boundary
-                ("works on my machine"/"should be fine" 금지)
-4. finish    — branch hygiene, commit message, optional merge/PR routing
+1. preflight    — environment detection (type checker / linter / test runner)
+2. clarify      — relentless question-asking until requirements are crisp
+3. route        — 4-way 자동 분기: DIRECT / PLAN / DIAGNOSE / PROTOTYPE
+4. build        — strict TDD (red → green → refactor), no implementation without failing test
+5. peer-review  — independent subagent reviews the diff (author bias 차단)
+6. ship-check   — (slot, deferred)
+7. verify       — no-soft-language verification at every phase boundary
+                  ("works on my machine"/"should be fine" 금지)
+8. retrospective — propose ADR / references / CONTEXT.md deposits for compound engineering
+9. finish       — branch hygiene, commit message, optional merge/PR routing
 ```
 
 **차별점**:
-- **superpowers (210k★)**: 작은 합성 가능한 스킬 스택. forge는 self-contained 한 명령으로 같은 discipline 제공 — 외부 plugin install 없이 바로 사용.
-- **Matt Pocock**: 엔지니어용 작고 조합 가능한 스킬. forge는 한 명령으로 4단계 묶음 — 결정 비용 낮춤.
-- **strict TDD + no-soft-language verification**: 다른 orchestrator가 가지지 않은 두 가지 엄격함. 이게 리드 메시지.
+- **superpowers (210k★)**: 작은 합성 가능한 스킬 스택. forge는 self-contained 한 명령으로 같은 discipline 제공 — 외부 plugin install 없이 바로 사용. **+ Compound engineering**: 매 세션이 repo에 영구 아티팩트(plan/regression test/ADR/reference/glossary) 누적 — superpowers는 invocation-local로 휘발.
+- **Matt Pocock**: 엔지니어용 작고 조합 가능한 스킬. forge는 한 명령으로 라우터 기반 묶음 — 결정 비용 낮춤.
+- **strict TDD + no-soft-language verification + 4-way auto-routing + 5채널 compound engineering**: 다른 orchestrator가 가지지 않은 4가지 엄격함. 이게 리드 메시지.
 
 **dogfooding**: 저자가 mekaknight 자체와 사이드 프로젝트에서 매일 사용. 마케팅 영상은 합성 시나리오가 아닌 실제 세션 클립.
 

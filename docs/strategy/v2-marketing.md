@@ -129,7 +129,7 @@ forge end-to-end 실제 세션은 짧은 영상 / GIF로 공유 가능:
 ### D-7 (Week 2 시작 시점)
 
 - 데모 영상 녹화:
-  - **리드 (~2분)**: `/forge` end-to-end 실제 feature 하나 — clarify → build-with-tests → verify → finish
+  - **리드 (~2분)**: `/forge` end-to-end 실제 feature 하나 — clarify → route → build-with-tests → verify → **retrospective** → finish. retrospective에서 ADR/reference deposit 장면 = compound engineering 입증 클립.
   - **2차 (~1-2분)**: `/tag` blob → Notion grouped issues → `/strike` 한 개 해결
   - **옵션 (~30초)**: `/lock` + `/launch` "available, not the headline" 짧은 시연
 - HN Show HN 초안:

@@ -54,7 +54,7 @@ Ship ──── 화요일 09:00 PST
 **목표**: 저자의 실제 workflow를 보여주는 영상 2-3개 + 출시 채널 패키지 완성.
 
 **작업**:
-- 영상 1 — `/forge` end-to-end (~2분). 실제 작은 feature 하나를 clarify → build-with-tests → verify → finish 까지. 저자의 실제 사용 세션이 그대로 콘텐츠.
+- 영상 1 — `/forge` end-to-end (~2분). 실제 작은 feature 하나를 clarify → route → build-with-tests → verify → **retrospective** → finish 까지. 마지막 retrospective에서 ADR/reference 한두 개 deposit되는 장면이 compound engineering 입증 클립. 저자의 실제 사용 세션이 그대로 콘텐츠.
 - 영상 2 — tracker (~1-2분). Slack 스타일 blob 한 덩어리를 `/tag`에 넘김 → Notion에 grouped issues로 생성 → `/strike`로 한 개 해결.
 - (옵션) 영상 3 — `/lock` + `/launch` (~30초). "있긴 한데 헤드라인은 아님" 톤. 호기심 있는 사용자만 보면 됨.
 - marketplace 등록 카피 (Anthropic 공식 + claudemarketplaces.com).

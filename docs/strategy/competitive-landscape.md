@@ -52,7 +52,7 @@
 | obra/superpowers | 210,695 | 위 참조 |
 | affaan-m/ECC (Everything Claude Code) | 196,875 | 거대 메타-팩 |
 | K-Dense-AI/scientific-agent-skills | 26,381 | 과학 도메인 |
-| EveryInc/compound-engineering-plugin | 17,656 | "Compound engineering" |
+| EveryInc/compound-engineering-plugin | 17,656 | "Compound engineering" — **⚠ 포지셔닝 충돌 가능**: v2.0이 forge의 Pillar 2를 "compound engineering"으로 호명 (README/CLAUDE.md/CONTEXT.md, ADR 0007). EveryInc가 같은 term을 17k★급으로 선점한 상태라 "원조 vs 파생" 인식 리스크 있음. **TODO**: EveryInc 플러그인 실제 메커니즘 조사 → 우리 5채널 deposit (plan/test/ADR/reference/glossary)와 비교 → 차별점 명확화 or 우리 term 재명명 결정. 미해결 시 마케팅 출시 전에 입장 정해야 함. |
 | Jeffallan/claude-skills | 9,445 | 일반 팩 |
 | **trailofbits/skills** | 5,449 | **보안 표준 (CodeQL + Semgrep + variant analysis)** |
 | zarazhangrui/codebase-to-course | 4,489 | 비-개발자용 (역방향) |

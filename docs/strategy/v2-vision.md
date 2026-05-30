@@ -25,16 +25,17 @@ ADR 0003은 v2.0을 16주 deep build에서 6-8주 lite wrap (lock이 semgrep/git
 
 | 진영 | 자리 | mekaknight과의 관계 |
 |---|---|---|
-| obra/superpowers (210k★) | 합성 가능한 작은 스킬 스택 (brainstorm → plan → tdd → review) | 그들은 *여러 plugin 조합*. 우리는 *한 명령 self-contained orchestrator* (forge). 외부 install 없음 |
-| Matt Pocock (110k★) | 엔지니어용 작고 조합 가능한 스킬 | 그들은 엔지니어 합성. forge는 한 명령으로 4단계 묶음 — 결정 비용 ↓ |
+| obra/superpowers (210k★) | 합성 가능한 작은 스킬 스택 (brainstorm → plan → tdd → review) | 그들은 *여러 plugin 조합 + invocation-local*. 우리는 *한 명령 self-contained orchestrator (forge) + 5채널 compound engineering* (repo에 영구 아티팩트 누적). 외부 install 없음 |
+| Matt Pocock (110k★) | 엔지니어용 작고 조합 가능한 스킬 | 그들은 엔지니어 합성. forge는 한 명령으로 라우터 기반 묶음 (DIRECT/PLAN/DIAGNOSE/PROTOTYPE) — 결정 비용 ↓ |
 | Linear / Notion / GitHub Issues | generic CRUD 트래커 | tracker는 프롬프트 → 문제 진술 변환. 이슈 제목이 commit 메시지가 아닌 문제 진술처럼 읽힘 |
 | Anthropic security-guidance | 보안 단일축 (2026.5 출시) | v2.0 marketing surface 와 거의 겹치지 않음. lock/launch가 alpha utility로 인접하나 헤드라인 아님 |
 | VIBECODE AUDIT | 사람 컨설팅 $199-599 | 본 v2.0 surface와 무관 |
 
-### 차별화의 두 축
+### 차별화의 세 축
 
-1. **discipline-first** — forge의 strict TDD + no-soft-language verification. "works on my machine" / "should be fine" 같은 soft language를 verification 경계에서 거부. 한 명령 self-contained — superpowers / Matt Pocock 같은 외부 plugin 조합 불필요.
-2. **humane-tracking-first** — tracker의 이슈가 commit 메시지("fix: X")가 아닌 **문제 진술**("사용자가 X를 시도했을 때 Y 상태가 됨")로 읽히도록 프롬프트/blob을 파싱. 코드베이스에 대조 후 검증.
+1. **discipline-first** — forge의 strict TDD + no-soft-language verification + 4-way auto-routing (DIRECT/PLAN/DIAGNOSE/PROTOTYPE). "works on my machine" / "should be fine" 같은 soft language를 verification 경계에서 거부. 한 명령 self-contained — superpowers / Matt Pocock 같은 외부 plugin 조합 불필요.
+2. **compound-engineering-first** — 매 forge 세션이 repo의 5개 채널(plan files, regression tests, ADR, discipline references, CONTEXT.md domain glossary)에 영구 아티팩트를 deposit. plan + regression test는 자동, ADR/reference/glossary는 Retrospective phase에서 auto-prompt. superpowers처럼 invocation-local로 휘발하지 않음 — codebase가 시간이 갈수록 *easier to work in*.
+3. **humane-tracking-first** — tracker의 이슈가 commit 메시지("fix: X")가 아닌 **문제 진술**("사용자가 X를 시도했을 때 Y 상태가 됨")로 읽히도록 프롬프트/blob을 파싱. 코드베이스에 대조 후 검증.
 
 ## 타겟 페르소나
 
