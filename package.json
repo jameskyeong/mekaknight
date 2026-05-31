@@ -3,6 +3,8 @@
   "version": "2.0.0-alpha.7",
   "description": "Developer productivity skills for Claude Code — a self-contained development orchestrator (/forge) with optional inspection and Notion issue tracking utilities",
   "scripts": {
-    "version": "node scripts/sync-version.mjs && git add .claude-plugin/marketplace.json"
+    "version": "node scripts/sync-version.mjs && git add .claude-plugin/marketplace.json",
+    "eval": "node eval/run.mjs",
+    "prepublishOnly": "node eval/run.mjs"
   }
 }

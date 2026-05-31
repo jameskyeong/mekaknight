@@ -26,6 +26,10 @@ _Avoid_: helpers, support files (too vague — these are load-bearing discipline
 The forge phase that runs between **Verify** and **Finish** to deposit this session's learnings into the repo's compound-engineering channels. Checks three channels in order — ADR (`docs/adr/`), discipline references (`skills/forge/references/`), CONTEXT.md domain glossary — and proposes a deposit only when the channel's threshold is met. Silent exit is the expected outcome for routine small changes; the phase is successful when it correctly identifies that no deposit is needed. See [ADR 0007](docs/adr/0007-retrospective-phase.md) and [`references/retrospective.md`](skills/forge/references/retrospective.md).
 _Avoid_: documentation phase (Retrospective is for compounding artifacts, not user-facing docs), post-mortem (post-mortems are for failures; Retrospective runs on green Verify), wrap-up (too vague — Retrospective has explicit per-channel thresholds).
 
+**Eval discipline**:
+The automated regression net at `eval/` that catches drift between skill *declarations* (cross-cutting gates, inline-gloss rule, banned-language list) and skill *content*. v1 is static — check modules in `eval/checks/` apply to fixture files in `eval/fixtures/` plus the repo's skill markdown. Wired as `prepublishOnly`, so `npm publish` refuses on a failing build. v2 will add headless `claude -p` session evals against the same check library; deferred per [ADR 0009](docs/adr/0009-eval-discipline-v1.md). The fixtures are split into **positive** (ideal forge output, must pass declared checks) and **negative** (intentionally-bad samples that *must* trigger a named check) — the latter are unit tests for the checks themselves.
+_Avoid_: tests (overlaps with code tests; eval discipline is for skill prose), linting (lint suggests style; eval enforces declared rules), QA (too vague), CI (an enforcement mechanism, not the discipline itself).
+
 ### Positioning
 
 **Compound engineering**:
