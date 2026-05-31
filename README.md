@@ -95,7 +95,7 @@ Ships in v2.0 but not the v2.0 headline — the author doesn't use them daily an
 | Command | What it does |
 |---|---|
 | `/lock` | v0.1 inspection for Supabase RLS gaps, secret-key client exposure (Next.js `"use client"` paradigm), missing Stripe webhook signatures |
-| `/launch` | v0.1 GO / NO-GO deploy verdict aggregating lock's findings |
+| `/launch` | v0.1 security GO / NO-GO deploy verdict from lock's findings (security-only by design — multi-axis aggregation is not promised, see [ADR 0010](docs/adr/0010-launch-v0.1-security-only.md)) |
 
 > **Framework note**: lock's secret-key check assumes a Next.js-style client/server boundary. SvelteKit / Nuxt / Remix may receive false PASSes on that specific check — manual review recommended for those stacks until framework-specific detection lands.
 

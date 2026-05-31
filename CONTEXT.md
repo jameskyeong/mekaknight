@@ -11,8 +11,8 @@ The development orchestrator skill (`/mekaknight:forge`). Takes raw requirements
 _Avoid_: workflow (ambiguous — see Flagged Ambiguities), temper (v1 name, retired)
 
 **Production-readiness gate**:
-The architectural concept spanning the entire mekaknight v2.0 pipeline: **forge** builds the code, **launch-check** inspects it across dimensions (planned), **launch** issues the final verdict. Not a single skill — the emergent property of all three working in sequence.
-_Avoid_: workflow, pipeline (too generic)
+The architectural concept spanning the mekaknight v2.0 pipeline: **forge** builds the code, an **inspection layer** (currently `mekaknight:lock` alone) checks service-configuration security, **launch** issues the final verdict. Not a single skill — the emergent property of these working in sequence. v2.0 ships the inspection layer as security-only; multi-axis inspection (design / quality / performance / dependencies) is post-v2.0 work, deliberately not promised — see [ADR 0010](docs/adr/0010-launch-v0.1-security-only.md).
+_Avoid_: workflow, pipeline (too generic), launch-check (a never-shipped umbrella name — the actual layer is "the inspection skills launch invokes")
 
 **Cross-cutting verify gate**:
 A discipline enforced at every phase boundary within **forge**: no phase may declare completion without running verification commands and directly observing the output. "Should work" and "seems to pass" are treated as "not verified."
@@ -67,8 +67,8 @@ _Avoid_: harden (v1 name, retired), production-readiness gate (lock is not the g
 ### Launch ecosystem
 
 **Launch**:
-Alpha utility (`/mekaknight:launch`) that issues a GO / NO-GO verdict by aggregating lock's findings. v0.1 ships in v2.0 but is **off the marketing surface** for the same reason as lock (see ADR 0004). The output reads "LAUNCH READY?". Future direction tied to whether post-launch users ask for it.
-_Avoid_: ship-ready (v1 name, retired), production-readiness gate (deferred from v2.0 surface).
+Alpha utility (`/mekaknight:launch`) that issues a **security** GO / NO-GO verdict from `lock`'s findings. v0.1 is deliberately security-only — there is no design / quality / performance axis, and multi-axis aggregation is not promised (see [ADR 0010](docs/adr/0010-launch-v0.1-security-only.md)). Ships in v2.0 but is **off the marketing surface** for the same reason as lock (see ADR 0004). The output reads "LAUNCH READY?". Future direction tied to whether post-launch users ask for it.
+_Avoid_: ship-ready (v1 name, retired), production-readiness gate (deferred from v2.0 surface), multi-axis aggregator (overclaims v0.1 — that framing was retired in ADR 0010).
 
 ### Issue tracking
 
@@ -96,7 +96,7 @@ _Avoid_: old workflow, legacy workflow
 
 ## Example dialogue
 
-> **Dev**: "I want to add lock to the forge pipeline."
-> **Domain expert**: "You mean adding it to the launch-check slot inside forge? Launch-check is where all inspection skills plug in. Forge itself just orchestrates the build flow — it doesn't inspect."
-> **Dev**: "Right. So when forge reaches the launch-check phase, it invokes launch-check, which then calls lock?"
-> **Domain expert**: "Eventually, yes — but launch-check doesn't exist yet. For now lock runs standalone, and launch reads lock's output directly to issue GO or NO-GO."
+> **Dev**: "I want to wire lock into the forge pipeline."
+> **Domain expert**: "Forge has a Ship-check slot that activates when inspection skills are available — that's the wiring point. But for v2.0 the slot stays inert: forge skips it with a note, and `lock` runs standalone."
+> **Dev**: "So how does launch fit in?"
+> **Domain expert**: "Launch is a separate skill the user invokes when they want a deploy verdict. It calls `lock`, reads the findings, and issues a security GO / NO-GO. It is not a multi-axis aggregator — that framing was retired in [ADR 0010](docs/adr/0010-launch-v0.1-security-only.md). v0.1 is security-only by design, and post-v0.1 expansion is gated on real user demand, not pre-announced."

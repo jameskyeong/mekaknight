@@ -1,40 +1,36 @@
 ---
 name: mekaknight:launch
 description: >-
-  One-line GO / NO-GO verdict on whether a project is safe to deploy. Runs the
-  available mekaknight inspection skills, aggregates blocking findings, and
-  answers the only question that matters: can I ship this right now? Use when:
-  'launch', 'can I ship', 'is this safe to deploy', 'ready to ship', 'cleared for launch'.
+  One-line security GO / NO-GO verdict on whether a project is safe to deploy.
+  Runs mekaknight:lock and translates its findings into a single binary answer:
+  can I ship this right now? Use when: 'launch', 'can I ship',
+  'is this safe to deploy', 'ready to ship', 'cleared for launch'.
 ---
 
-# Launch — GO / NO-GO Verdict
+# Launch — Security GO / NO-GO Verdict
 
-Answers one question: **"Can I deploy this right now?"** — Yes or No, plus exactly what's blocking.
+Answers one question: **"Is there a known security configuration issue blocking deploy?"** — Yes or No, plus exactly what's blocking.
 
-Other tools hand the user a list of 40 issues and leave them to decide. Launch makes the decision: it runs the inspection skills, counts what actually blocks a safe deploy, and gives a single verdict.
+`mekaknight:lock` reports findings; launch turns those findings into a single binary decision. That decision is the entire value — no other inspection axis ships in v0.1.
 
-**v0.1 scope:** aggregates `/mekaknight:lock` only (security). As `/polish` (design) and `/dedupe` (quality) ship, they plug into the same aggregation — the verdict structure does not change.
+**v0.1 scope: security only.** Launch runs `mekaknight:lock` and nothing else. There is no design check, no quality check, no performance check. Multi-axis aggregation (design / quality / performance / dependencies) is post-v0.1 work and not promised — see [ADR 0010](../../docs/adr/0010-launch-v0.1-security-only.md) for the rationale.
 
 ---
 
 ## How to run
 
-### Step 1: Run available inspections
+### Step 1: Run `mekaknight:lock`
 
-Invoke each available mekaknight inspection skill and collect its findings.
-
-- **Security** — invoke `mekaknight:lock`. Collect its BLOCK and WARN items.
-- **Design** — `mekaknight:polish` (not yet available; skip in v0.1).
-- **Quality** — `mekaknight:dedupe` (not yet available; skip in v0.1).
+Invoke `mekaknight:lock` against the project and collect its BLOCK and WARN items.
 
 If `lock` is unavailable, tell the user it must be installed and stop — there is nothing to base a verdict on.
 
 ### Step 2: Apply the verdict rule
 
-- **Security BLOCK ≥ 1** → **NO-GO**.
-- **Security BLOCK = 0** → **GO**. (Design and quality findings are advisory in v0.1 — they do not block. They surface as recommendations, not blockers.)
+- **BLOCK ≥ 1** → **NO-GO**.
+- **BLOCK = 0** → **GO**. WARN items surface as advisory and do not change the verdict.
 
-This matches the catalog default: **security blocks, other dimensions warn.** A `--strict` mode that blocks on design/quality too is a later addition.
+The rule is intentionally simple: security configuration issues that `lock` rates as BLOCK are deploy-blockers; everything else is information.
 
 ### Step 3: Emit the verdict
 
@@ -74,7 +70,7 @@ If **every** check returned SKIP (the project uses neither Supabase nor Stripe, 
 🚦 LAUNCH READY?   GO  ✅
 
 No applicable security checks ran (no Supabase or Stripe usage detected).
-Nothing is blocking, but lock v0.1 had nothing to inspect in this project.
+Nothing is blocking, but lock had nothing to inspect in this project.
 ```
 
 ---
@@ -83,9 +79,10 @@ Nothing is blocking, but lock v0.1 had nothing to inspect in this project.
 
 - The verdict is **GO or NO-GO** — never "mostly ready" or "probably fine". Binary, by design.
 - A NO-GO must list **every** blocking item with file:line. The user needs to know exactly what to fix.
-- Advisory items are shown but never change a GO to NO-GO in v0.1.
-- Do not re-derive findings independently — launch is an **aggregator**. The inspection skills own the detection logic; launch owns the decision.
-- Never fabricate a GO. If an inspection skill errored or could not run, report that the verdict is **incomplete**, not GO.
+- WARN-level items are shown as advisory and never change a GO to NO-GO.
+- Do not re-derive findings independently — launch is a **decision layer** on top of `lock`. `lock` owns the detection; launch owns the verdict.
+- Never fabricate a GO. If `lock` errored or could not run, report that the verdict is **incomplete**, not GO.
+- Do not market launch as a multi-axis aggregator. v0.1 is "security GO/NO-GO" — staying honest about scope is itself a feature.
 
 ## Output style — inline-gloss discipline
 
