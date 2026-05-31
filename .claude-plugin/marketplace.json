@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Developer productivity skills by James Kyeong",
-    "version": "2.0.0-alpha.8"
+    "version": "2.0.0-alpha.9"
   },
   "plugins": [
     {
@@ -16,7 +16,7 @@
         "url": "https://github.com/jameskyeong/mekaknight.git"
       },
       "description": "Developer productivity skills for Claude Code — issue tracking, structured workflows, and more",
-      "version": "2.0.0-alpha.8",
+      "version": "2.0.0-alpha.9",
       "strict": true
     }
   ]
