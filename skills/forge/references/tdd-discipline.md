@@ -2,7 +2,7 @@
 
 Reference for forge's **Build** phase. The Build section of `SKILL.md` enforces the loop at the orchestration level; this document is the deeper discipline — the rules, the anti-patterns, the edge cases that make the loop actually work instead of becoming theater.
 
-The non-negotiable: **a failing test exists before a line of implementation is written.** Every shortcut around this rule produces code that looks complete but cannot be evolved with confidence later.
+The non-negotiable: **a failing test exists before a line of implementation is written.** Every shortcut around this rule produces code that looks complete but cannot be evolved with confidence later. If implementation got written before its test, the recovery is deletion and a fresh RED — not retrofitting a test around the existing code.
 
 ---
 
@@ -64,9 +64,10 @@ The fastest way to violate this is to think "well, while I'm here, I should hand
 
 If you find yourself writing implementation that the test does not exercise:
 - STOP.
-- Either delete the extra code, or write another RED test that exercises it before keeping it.
+- **Delete the extra code.** Do not keep it "as reference"; do not keep it while you author a test around it — a test written against code that already exists passes without ever having failed, which proves nothing.
+- If the next behavior genuinely needs that code, write the next RED test first and let it pull the implementation back in, written fresh.
 
-There is no third option. Implementation without a test driving it is technical debt the moment it is written.
+There is no other option. Implementation without a test driving it is technical debt the moment it is written.
 
 ### Cheating is allowed at GREEN
 
@@ -112,7 +113,7 @@ The exit condition for REFACTOR is subjective but bounded: the structure is mean
 
 Writing the implementation first, then writing tests that confirm what you already wrote. This produces tests that always pass (because they were authored against working code) but do not constrain future changes. The hallmark is tests that mirror the implementation's structure exactly — one test per branch in the function, one test per line of code, no asymmetry between what the user cares about and what the code does internally.
 
-The fix: when you catch yourself test-after, the test you should write is **for a behavior that does not yet exist** — a missing case, an edge case, an error path. That puts you back in RED and recovers the discipline.
+The fix: when you catch yourself test-after, the test you should write is **for a behavior that does not yet exist** — a missing case, an edge case, an error path. That puts you back in RED and recovers the discipline. And if the untested implementation is still uncommitted, the recovery is stronger: delete it and start from RED — deletion is what removes the bias the existing code would impose on the tests you write next.
 
 ### Mock-overuse
 

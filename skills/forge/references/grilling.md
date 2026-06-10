@@ -1,6 +1,6 @@
 # Clarify Discipline — Grilling for Ambiguity
 
-Reference for forge's **Clarify** phase. The Clarify section of `SKILL.md` enforces the surface rule (one question at a time; recommended answer with reasoning; ambiguity checklist must reach zero). This document is the deeper discipline — why the rule exists, how to actually grill an ambiguity to the ground, and what to do at the awkward edges (the user wants to skip, no domain doc exists, every question feels like friction).
+Reference for forge's **Clarify** phase. The Clarify section of `SKILL.md` enforces the surface rule (one question at a time; recommended answer with reasoning; ambiguity checklist must reach zero; 2-3 approaches proposed before Route). This document is the deeper discipline — why the rule exists, how to actually grill an ambiguity to the ground, and what to do at the awkward edges (the user wants to skip, no domain doc exists, every question feels like friction).
 
 The non-negotiable: **ambiguity is a load-bearing signal, not friction.** Every question you do not ask now becomes a question you answer wrong later, in code, where it costs much more to revisit.
 
@@ -125,6 +125,24 @@ Common ambiguous success criteria and their sharper forms:
 | "Make it faster" | "p95 latency on `/search` drops from current 800ms to under 300ms, measured on the production query workload" |
 | "Looks better" | "Margin between header and content is 16px on mobile; the search bar is centered horizontally" |
 | "Fix the bug" | "After the fix, the reproduction steps in issue #142 no longer produce the error" |
+
+---
+
+## Proposing approaches — the step between checklist-zero and Route
+
+A clean checklist tells you the *problem* is understood. It says nothing about whether the *solution shape* has been examined. Jumping from checklist-zero straight to Route means the first design the model happened to think of becomes the design — first-idea anchoring, unexamined.
+
+The discipline:
+
+- **Two or three approaches, meaningfully different.** Different in structure, dependency choice, or trade-off — not the same idea with different naming. If two candidates would produce nearly the same diff, they are one approach.
+- **Lead with the recommendation.** Same pattern as question-asking: state which approach you recommend and the one-or-two-sentence reasoning. The user agrees or redirects — both are cheap.
+- **Name the trade-off, not just the description.** "Approach B is simpler but couples the validator to the route handler" gives the user something to decide on; "Approach B uses middleware" does not.
+- **Scale honestly.** For a change where only one approach is genuinely viable, present that single approach in 2-3 sentences and state *why* the alternatives are not viable ("a second approach would require the schema migration we excluded from scope"). The step shrinks; it does not disappear. Naming why the alternatives lose is itself a check that they were considered.
+- **The user chooses.** The chosen approach is what Route sizes and what the plan file (PLAN route) encodes. An approach the user never saw cannot be the one that ships.
+
+### Anti-pattern: the inevitable-single-option presentation
+
+Presenting one approach with "this is the standard way" framing when real alternatives exist. This is the approach-level version of answering your own questions — it wears the grammar of a proposal while removing the user's decision. If the model cannot name a second approach *or* explain why none exists, the solution space has not been explored; do the exploration before presenting.
 
 ---
 

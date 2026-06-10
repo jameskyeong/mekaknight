@@ -1,6 +1,6 @@
 # PROTOTYPE Discipline — Throwaway Exploration
 
-Reference for forge's **PROTOTYPE route**. The Route → PROTOTYPE section of `SKILL.md` enforces the phase order (Clarify constraints → Build variations → User review → Discard or Promote-to-Plan). This document is the deeper discipline — why prototypes are throwaway by default, the time-box and variation rules that prevent prototype-into-production drift, and what to do when the prototype reveals the original question was wrong.
+Reference for forge's **PROTOTYPE route**. The Route → PROTOTYPE section of `SKILL.md` enforces the phase order (Clarify the question → pick the LOGIC/UI branch → Build → User review → Discard or Promote-to-Plan). This document is the deeper discipline — why prototypes are throwaway by default, the time-box and variation rules that prevent prototype-into-production drift, and what to do when the prototype reveals the original question was wrong.
 
 The non-negotiable: **a prototype answers a question; it is not delivery.** The output is not the deliverable; the *answer* is. The prototype code itself is throwaway by default; the chosen direction goes into a fresh PLAN run with full discipline.
 
@@ -36,6 +36,30 @@ Every prototype starts with the assumption that the code is discarded after the 
 
 ---
 
+## The two branches — LOGIC and UI
+
+The question decides the artifact's shape. Getting the branch wrong wastes the whole prototype.
+
+### LOGIC — "does this state model / data model / business logic hold up?"
+
+Build **one small interactive harness** — a terminal app or script that pushes the model through the cases that are hard to reason about on paper (weird transitions, concurrent updates, boundary states). A single artifact is the correct shape here: the comparison is between the model and reality, not between design alternatives.
+
+LOGIC harness rules:
+
+- **One command to run.** Whatever the project's existing task runner supports. The user starts it without thinking.
+- **Surface the state.** After every action, print the full relevant state so each transition is visible.
+- **No persistence by default.** State lives in memory — persistence is usually the thing being checked, not a dependency. If the question explicitly involves a database, use a scratch store with an unmistakable throwaway name.
+
+### UI — "what should this look like?" / "which approach fits?"
+
+Build **two or three meaningfully different variations**, presented side by side. The variation discipline below applies to this branch.
+
+### Picking the branch
+
+Identify which question is being asked — from the user's prompt, the surrounding code, or by asking. If genuinely ambiguous and the user is unreachable, default by the surrounding code (a backend module → LOGIC; a page or component → UI) and state the assumption at the top of the prototype.
+
+---
+
 ## Time-box discipline
 
 Every prototype has a budget. When the budget expires, the question is either answered (then the route exits) or it is killed (then the route exits with "the question is unanswered with this much effort; either re-Clarify the question or accept the unknown").
@@ -53,9 +77,9 @@ A prototype with no time-box becomes work that never ends, often producing code 
 
 ---
 
-## Variation discipline
+## Variation discipline (UI branch)
 
-A prototype that builds one approach and iterates on it is not exploration — it is delivery without tests. Exploration means multiple variations evaluated against each other.
+This section applies to the UI branch; a LOGIC prototype is one harness by design. A UI prototype that builds one approach and iterates on it is not exploration — it is delivery without tests. Exploration means multiple variations evaluated against each other.
 
 The discipline:
 - **Two or three variations minimum.** A single variation cannot answer "which approach fits"; the answer requires comparison.
@@ -135,11 +159,11 @@ The prototype has been running for a week. There is no defined "done." The code 
 
 The fix: every prototype has a budget stated up front. If the budget needs to extend, the extension is a deliberate decision, not drift.
 
-### Single approach treated as exploration
+### Single approach treated as exploration (UI branch)
 
 The agent builds one design, iterates on it, polishes it, presents it as a prototype. The user has not been given a choice; the "exploration" was implementation.
 
-The fix: prototypes carry multiple variations. If only one variation makes sense, the work is probably DIRECT or PLAN, not PROTOTYPE.
+The fix: UI prototypes carry multiple variations. If only one design direction makes sense and the question is not a LOGIC question either, the work is probably DIRECT or PLAN, not PROTOTYPE. (A LOGIC prototype is the deliberate exception — one interactive harness is its correct shape, because the comparison is model-versus-reality, not design A versus design B.)
 
 ### Skipping the review step
 
@@ -198,7 +222,8 @@ After review, the user says "both are fine." This is not a failure; it is inform
 PROTOTYPE has a different exit gate from DIRECT/PLAN/DIAGNOSE because the work product is not a committed change. The form:
 
 > **Question**: `<one sentence>`.
-> **Variations built**: `<list with one-line summaries>`.
+> **Branch**: `<LOGIC | UI>`.
+> **Artifacts built**: `<LOGIC: the harness and the cases it exercised | UI: variations with one-line summaries>`.
 > **Time-box**: `<budget>` (actual: `<time taken>`).
 > **User review**: presented at `<timestamp>`. User chose: `<Discard | Promote variation N | Re-Clarify>`.
 > **If Discard**: branch deleted; finding captured at `<location>`.

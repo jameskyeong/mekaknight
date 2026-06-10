@@ -2,6 +2,8 @@
 
 This folder is forge's **discipline library**. `SKILL.md` is the orchestrator (which phase comes next, what the exit gate is). Each module here goes deeper on the discipline of a specific phase — the principles, the patterns, the anti-patterns, the edge cases — so that forge's depth no longer depends on external skills.
 
+Reading the phase's module at phase entry is **mandatory** — `SKILL.md`'s reference-loading gate enforces it. These modules hold the anti-pattern tripwires the orchestrator deliberately omits, and a tripwire that is not in context cannot interrupt anything.
+
 See [ADR 0005](../../../docs/adr/0005-forge-depth-references.md) for the rationale.
 
 ## Phase mapping

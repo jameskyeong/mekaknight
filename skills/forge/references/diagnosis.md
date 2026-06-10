@@ -2,7 +2,7 @@
 
 Reference for forge's **DIAGNOSE route**. The Route → DIAGNOSE section of `SKILL.md` enforces the phase order (Reproduce → Minimize → Investigate → Fix → Regression-prevent). This document is the deeper discipline — why each step exists, the anti-patterns that turn diagnosis into guess-and-check, and what to do at the edges (cannot reproduce locally, intermittent bugs, production-only data).
 
-The non-negotiable: **the failing test that captures the bug is the goal of Reproduce.** Everything after Reproduce is downstream of that test. Changing code without a failing test that proves the change matters is guess-and-check dressed up as fixing.
+The non-negotiable: **a fast, deterministic pass/fail signal that captures the bug — ideally a failing test — is the goal of Reproduce.** Everything after Reproduce is downstream of that signal. Changing code without a failing signal that proves the change matters is guess-and-check dressed up as fixing.
 
 ---
 
@@ -16,18 +16,33 @@ A dedicated route makes the phase order visible. The discipline is then: do not 
 
 ## The five steps
 
-### 1. Reproduce — write the failing test
+### 1. Reproduce — build the feedback loop
 
-The goal: produce a test that fails *because of the bug* — not because of setup, not because of a typo, not because of an environment difference. When the test passes, the bug is fixed; when it fails, the bug is present.
+This step is where diagnosis is won or lost. A fast, deterministic, agent-runnable pass/fail signal for the bug is what every later step consumes — bisection, hypothesis-testing, and fix-verification all just run the loop. Spend disproportionate effort here; be aggressive and creative before concluding a loop cannot be built.
 
-Forms a Reproduce test can take:
-- A unit test that calls the buggy function with the inputs the user reported and asserts the buggy output should not happen.
-- An integration test that walks through the user's reproduction steps and asserts the expected end state.
-- A script that runs the buggy code path and exits non-zero on the bug.
+The goal: a signal that fails *because of the bug* — not because of setup, not because of a typo, not because of an environment difference. When the signal passes, the bug is fixed; when it fails, the bug is present.
 
-The test does not need to be elegant. It needs to be deterministic and bug-specific. Elegance comes in Minimize.
+**Loop-construction menu — try in roughly this order:**
 
-**Exit condition**: the test runs, fails, and the failure points at the bug. If the failure points at a setup error or a fixture issue, Reproduce has not exited — fix the setup first.
+1. **Failing test** at whatever seam reaches the bug — unit, integration, e2e. The preferred form: it enters the suite at Regression-prevent with no translation.
+2. **HTTP script** (`curl` or equivalent) against a running dev server, asserting on status and body.
+3. **CLI invocation** with a fixture input, diffing output against a known-good snapshot.
+4. **Headless browser script** that drives the UI and asserts on DOM, console, or network.
+5. **Trace replay** — capture a real request / payload / event log to disk; replay it through the code path in isolation.
+6. **Throwaway harness** — a minimal subset of the system (one service, stubbed deps) that exercises the bug's code path with a single call.
+7. **Fuzz loop** — for "sometimes wrong output" bugs, run hundreds of randomized inputs and detect the failure mode.
+8. **Bisection harness** — if the bug appeared between two known states (commit, dataset, version), automate "check state X" so `git bisect run` can consume it.
+9. **Differential run** — same input through old vs new version (or two configs), diff the outputs.
+
+**Iterate on the loop itself.** Once a loop exists, sharpen it: faster (cache setup, narrow the scope), sharper signal (assert on the specific symptom, not "didn't crash"), more deterministic (pin time, seed RNG, isolate the filesystem). A 2-second deterministic loop is a different tool than a 30-second flaky one.
+
+**Non-deterministic bugs:** the goal is a *higher reproduction rate*, not instant cleanliness. Loop the trigger 100×, add stress, narrow timing windows. A 50%-reproduction bug is debuggable; a 1% bug is not — raise the rate first. (See the intermittent-bug edge case below.)
+
+**If no loop can be built:** stop and say so explicitly — list what was tried, then ask the user for environment access, a captured artifact (HAR file, log dump, recording), or permission for temporary instrumentation. Do not proceed to Investigate without a loop; hypotheses without a signal to test against are vibes.
+
+The loop does not need to be elegant. It needs to be deterministic and bug-specific. Elegance comes in Minimize.
+
+**Exit condition**: the loop runs, fails, and the failure points at the bug. If the failure points at a setup error or a fixture issue, Reproduce has not exited — fix the setup first.
 
 ### 2. Minimize — trim the reproduction
 
@@ -66,11 +81,14 @@ Standard GREEN discipline from `references/tdd-discipline.md`. The change is the
 
 **Exit condition**: minimized test passes, full suite still passes, output observed directly.
 
+**Circuit breaker — count your failed fixes.** A fix that does not make the minimized loop pass means the hypothesis was wrong or incomplete: return to Investigate with what the failure taught you. But track the count. After the **third** failed fix attempt, STOP — do not attempt fix #4. The telltale pattern: each fix reveals new coupling, new shared state, or a new symptom in a different place; each fix needs "just one more" adjacent change. That pattern is not a failed hypothesis — it is a wrong architecture around the bug. Surface it to the user, with the three attempts as evidence, and discuss restructuring before any further fixing.
+
 ### 5. Regression-prevent — the test stays
 
 The minimized Reproduce test enters the suite permanently. It is the only thing that prevents the exact same bug from recurring.
 
 The discipline:
+- If the Reproduce loop was not a test (HTTP script, harness, bisection run), convert the minimized reproduction into a test at the closest seam now. If no seam can host it, that absence is itself a finding — record it alongside the fix as an architecture gap.
 - The test is committed alongside the fix.
 - The test is not modified later "to clean it up" in a way that would make it stop exercising the original bug.
 - If the test exercises an edge case the rest of the suite does not (test data, fixture state), that fixture stays too.

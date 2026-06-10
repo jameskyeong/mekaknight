@@ -19,7 +19,39 @@ Named after the act of forging at the anvil — each phase hammers the code into
 
 **For the v1.x orchestrator that uses superpowers + Matt Pocock skills, see `/mekaknight:workflow-external`.**
 
-> **Discipline depth lives in [`references/`](references/README.md).** Each phase below carries a pointer to the module that deepens it (principles, anti-patterns, edge cases). The orchestrator below stays slim; the references hold the full discipline.
+> **Discipline depth lives in [`references/`](references/README.md).** Each phase below carries a pointer to the module that deepens it (principles, anti-patterns, edge cases). The orchestrator below stays slim; the references hold the full discipline. **Loading them is not optional — see the reference-loading gate below.**
+
+---
+
+## Cross-cutting gate: mandatory reference loading
+
+The references are not background reading — they hold the anti-pattern tripwires and edge-case rules this orchestrator deliberately omits. A tripwire that is not in context cannot interrupt you.
+
+**The rule:** when a phase begins, **Read its reference module before the phase's first action.** A reference already read earlier in the same session does not need re-reading.
+
+| Phase | Read at phase entry |
+|---|---|
+| Clarify | [`references/grilling.md`](references/grilling.md) |
+| Route → PLAN | [`references/planning.md`](references/planning.md) |
+| Route → DIAGNOSE | [`references/diagnosis.md`](references/diagnosis.md) |
+| Route → PROTOTYPE | [`references/prototyping.md`](references/prototyping.md) |
+| Build | [`references/tdd-discipline.md`](references/tdd-discipline.md) |
+| Peer-review | [`references/peer-review.md`](references/peer-review.md) + [`references/subagent-patterns.md`](references/subagent-patterns.md) |
+| Verify | [`references/verification.md`](references/verification.md) |
+| Retrospective | [`references/retrospective.md`](references/retrospective.md) |
+| Finish | [`references/finishing.md`](references/finishing.md) |
+
+Running a phase from memory of a prior session instead of Reading the module is a gate violation — references evolve, and the version on disk is the authority.
+
+---
+
+## Cross-cutting rule: phase tracking
+
+Forge instruments its own pipeline with the task tracker (TodoWrite or the environment's equivalent). An untracked phase is a silently skippable phase; the todo list makes a skipped gate visible to the user instead of discoverable only by reading the transcript.
+
+- **At forge start:** create one todo each for `Preflight`, `Clarify`, `Route`.
+- **When Route selects:** append the route's own steps (PLAN → one todo per plan task; DIAGNOSE → Reproduce / Minimize / Investigate / Fix / Regression-prevent; PROTOTYPE → its numbered steps) plus `Peer-review` (not for PROTOTYPE), `Verify`, `Retrospective`, `Finish`.
+- **Completion rule:** a phase todo is marked completed only when its exit gate has been stated with evidence. Never mark a phase completed while its gate is unstated or failing.
 
 ---
 
@@ -52,7 +84,7 @@ The following phrases are **banned** in any completion claim. If you catch yours
 | Phase | Exit gate |
 |---|---|
 | Preflight | All environment checks pass — output observed |
-| Clarify | Ambiguity checklist = 0 items AND user explicitly confirms |
+| Clarify | Ambiguity checklist = 0 items AND user chose an approach AND user explicitly confirms |
 | Route (PLAN only) | User confirms plan file |
 | Build (per task) | Test runs observed to pass with exact output |
 | Peer-review | Every Critical/Important finding addressed or explicitly user-deferred |
@@ -134,7 +166,7 @@ Run these checks and report results:
 
 **Goal:** Reach shared understanding with zero ambiguity remaining.
 
-> **For the deeper discipline — one-question-at-a-time grilling, recommended-answer-with-reasoning patterns, deepened 5-category checklist, anti-patterns (shotgun questioning, vibes-based clarify, answering your own questions), and edge cases (premature skip, no CONTEXT.md, pushback fatigue) — see [`references/grilling.md`](references/grilling.md).**
+> **Required reading at phase entry — one-question-at-a-time grilling, recommended-answer-with-reasoning patterns, deepened 5-category checklist, approach-proposal discipline, anti-patterns (shotgun questioning, vibes-based clarify, answering your own questions), and edge cases (premature skip, no CONTEXT.md, pushback fatigue) — see [`references/grilling.md`](references/grilling.md).**
 
 If invoked from `mekaknight:strike`, use the issue title + body as starting context. If invoked standalone, use whatever the user provided. If invoked with a path to an existing plan file (`docs/plans/*.md`), skip Clarify and Route — proceed directly to Build with that plan (cross-session pickup).
 
@@ -155,12 +187,21 @@ After the initial understanding forms, systematically check these 5 categories. 
 4. **Conflicts with existing code**: Does this change break anything that already exists? Does it overlap with existing functionality?
 5. **Success criteria**: How do we know this is done? What specific test would prove it works? What would a failing test look like?
 
+### Propose approaches — after the checklist, before Route
+
+When the ambiguity checklist reaches 0, do not jump to Route with the first design that came to mind. Present **2-3 meaningfully different approaches**, each with one-line trade-offs, leading with your recommendation and its reasoning. The user's choice is what Route sizes.
+
+- Scale to the change: when only one approach is genuinely viable, present that one in 2-3 sentences *and state why the alternatives are not viable*. The presentation step is never skipped — only shortened.
+- Approaches must differ in structure or trade-off, not in phrasing.
+- No plan file, no routing, no code before the user has chosen.
+
 ### Exit gate
 
 1. Run through the 5 categories above and **list every remaining ambiguity explicitly**.
 2. If 1+ items remain — present them to the user, resolve each one, then re-run step 1.
-3. When 0 items remain — ask the user: **"All ambiguities resolved. Proceed?"**
-4. Only when the user explicitly confirms may you proceed to Route.
+3. When 0 items remain — propose approaches (above) and wait for the user's choice.
+4. Ask the user: **"All ambiguities resolved, approach chosen. Proceed?"**
+5. Only when the user explicitly confirms may you proceed to Route.
 
 **Skip conditions:** Only if the user explicitly says "skip clarify", "requirements are clear", or "skip brainstorming". The agent must NOT skip on its own judgment.
 
@@ -175,7 +216,7 @@ Based on Clarify output, determine the work's scope. **Only one route per run.**
 | **DIRECT** | Small, contained feature change. 1-4 commits, tightly-grouped files, no task dependencies. | Proceed directly to Build. |
 | **PLAN** | Medium feature. 5-15 commits, 2-4 files with shared state, tasks have dependencies. | Write plan file → user confirms → Docs checkpoint → sequential Build. |
 | **DIAGNOSE** | Bug-first work. Reproduction steps, error messages, "something is broken." | Reproduce → Minimize → Investigate → Fix → Regression-prevent. |
-| **PROTOTYPE** | Throwaway exploration. "How should this look", "try a few approaches", "I'm not sure which design fits." | Build variations with relaxed TDD → user review → Discard or Promote-to-Plan. |
+| **PROTOTYPE** | Throwaway exploration. "How should this look", "try a few approaches", "sanity-check this state model", "I'm not sure which design fits." | Pick LOGIC or UI branch → build with relaxed TDD → user review → Discard or Promote-to-Plan. |
 
 ### Unsupported routes
 
@@ -189,7 +230,7 @@ Proceed to **Build** immediately. No plan file, no docs checkpoint.
 
 ### Route: PLAN
 
-> **For the deeper discipline — what makes a plan file a contract vs a wish list, task sizing rules, dependency patterns, the value of Out-of-scope, anti-patterns (vague task, hidden dependencies, plan-as-document drift, mid-flight scope creep), and cross-session resume — see [`references/planning.md`](references/planning.md).**
+> **Required reading at phase entry — what makes a plan file a contract vs a wish list, task sizing rules, dependency patterns, the value of Out-of-scope, anti-patterns (vague task, hidden dependencies, plan-as-document drift, mid-flight scope creep), and cross-session resume — see [`references/planning.md`](references/planning.md).**
 
 #### PLAN.1: Write the plan file
 
@@ -244,29 +285,35 @@ If the session ends mid-execution, the user resumes by running `/forge` with the
 
 ### Route: DIAGNOSE
 
-> **For the deeper discipline — why each step exists, hypothesis-driven investigation, anti-patterns (changing code without a hypothesis, hypothesis-shopping, fixing the test instead of the bug, declaring victory when the symptom disappears), and edge cases (cannot reproduce locally, intermittent bugs, production-only data, dependency bugs) — see [`references/diagnosis.md`](references/diagnosis.md).**
+> **Required reading at phase entry — the feedback-loop construction menu, why each step exists, hypothesis-driven investigation, the three-failed-fixes circuit breaker, anti-patterns (changing code without a hypothesis, hypothesis-shopping, fixing the test instead of the bug, declaring victory when the symptom disappears), and edge cases (cannot reproduce locally, intermittent bugs, production-only data, dependency bugs) — see [`references/diagnosis.md`](references/diagnosis.md).**
 
 Five steps, each with its own exit condition. The cross-cutting verification gate applies to every step.
 
-1. **Reproduce** — write a test that fails *because of the bug*. Run it. Observe the failure. The exit condition is that the failure points at the bug, not at setup or fixture issues.
+1. **Reproduce** — build a fast, deterministic, agent-runnable pass/fail signal for the bug. A failing test is the preferred form; when a test cannot reach the bug, escalate through the loop-construction menu in [`references/diagnosis.md`](references/diagnosis.md) (HTTP script, CLI + output diff, headless browser, trace replay, throwaway harness, fuzz loop, bisection harness, differential run). Run the loop. Observe the failure. The exit condition is that the failure points at the bug, not at setup or fixture issues.
 2. **Minimize** — trim the reproduction until the test exercises only the bug-causing surface. Removing more would make the test pass for the wrong reasons.
 3. **Investigate** — form a hypothesis stating what causes the bug and where. Read code (do NOT change code yet) to confirm or refute. Repeat until a hypothesis is confirmed by reading.
 4. **Fix** — minimum code change that makes the minimized test pass without breaking other tests. Standard GREEN discipline applies (see `references/tdd-discipline.md`).
 5. **Regression-prevent** — the minimized test enters the suite permanently, committed alongside the fix.
 
+**Circuit breaker — three failed fixes means the architecture is the problem.** Count fix attempts. If a fix does not make the minimized test pass, return to Investigate with the new information — but after the **third** failed attempt, STOP. Do not attempt fix #4. The telltale pattern — each fix revealing new coupling or a new symptom somewhere else — means the structure around the bug is wrong, not the individual change. Surface this to the user with the three attempts as evidence and discuss restructuring before any further fixing. This is not a failed hypothesis; it is a wrong architecture.
+
 After Regression-prevent, proceed to Peer-review → Verify → Finish exactly as DIRECT/PLAN routes do. The minimized test is the regression net; the diff is fix + test together.
 
 ### Route: PROTOTYPE
 
-> **For the deeper discipline — why prototypes are throwaway by default, time-box and variation rules, the explicit user-review step, Discard vs Promote-to-Plan, anti-patterns (silent production drift, "while I'm here" production-grade work, no time-box, single approach as exploration, skipping review, Promote without restart), and edge cases (question turns out wrong, user wants to ship as-is, shared file conflicts) — see [`references/prototyping.md`](references/prototyping.md).**
+> **Required reading at phase entry — why prototypes are throwaway by default, the LOGIC/UI branch split, time-box and variation rules, the explicit user-review step, Discard vs Promote-to-Plan, anti-patterns (silent production drift, "while I'm here" production-grade work, no time-box, single approach as exploration, skipping review, Promote without restart), and edge cases (question turns out wrong, user wants to ship as-is, shared file conflicts) — see [`references/prototyping.md`](references/prototyping.md).**
 
 PROTOTYPE intentionally relaxes the TDD discipline that DIRECT/PLAN/DIAGNOSE enforce. The relaxation is scoped to this route and ends the moment a variation is Promoted.
 
 1. **Clarify the question** — state in one sentence what the prototype is answering. If it cannot be stated, return to Clarify.
-2. **Set a time-box** — explicit budget (typically 30 min - 1 day). When it expires, the route exits.
-3. **Build variations** — two or three meaningfully different approaches. No RED, no scope discipline at GREEN, no REFACTOR, no Peer-review subagent. Existing tests still must pass.
-4. **Present to user** — surface the variations side by side with observed trade-offs. The agent does not declare done.
-5. **User decides** — Discard (default), Promote variation N (kicks off a fresh PLAN run), or Re-Clarify (the original question was wrong).
+2. **Pick the branch** — the question decides the artifact:
+   - **LOGIC** — "does this state model / data model / business logic hold up?" → build **one** small interactive harness (terminal app or script) that pushes the model through the cases that are hard to reason about on paper. A single artifact is correct here — the comparison is between the model and reality, not between design alternatives. Surface the full relevant state after every action.
+   - **UI** — "what should this look like?" / "which approach fits?" → build **two or three** meaningfully different variations, presented side by side.
+   - Ambiguous and the user unreachable → default by the surrounding code (backend module → LOGIC; page or component → UI) and state the assumption up front.
+3. **Set a time-box** — explicit budget (typically 30 min - 1 day). When it expires, the route exits.
+4. **Build** — per the branch above. No RED, no scope discipline at GREEN, no REFACTOR, no Peer-review subagent. Existing tests still must pass.
+5. **Present to user** — LOGIC: walk through the harness runs and what they revealed. UI: variations side by side with observed trade-offs. The agent does not declare done.
+6. **User decides** — Discard (default), Promote (the chosen variation, or the LOGIC answer — kicks off a fresh PLAN run), or Re-Clarify (the original question was wrong).
 
 **Promote is a restart, not a continuation.** The chosen variation's code does not graduate; a fresh PLAN run takes the prototype's answer as input to its own Clarify, then authors production code with full discipline.
 
@@ -278,7 +325,15 @@ After PROTOTYPE exits, the prototype branch is Discarded (per `references/finish
 
 **Goal:** Implement the solution with test-driven development. No exceptions.
 
-> **For the deeper discipline — RED/GREEN/REFACTOR exit conditions, anti-patterns (test-after, mock-overuse, scope creep at GREEN, refactor-on-red), and edge cases (legacy code, incidents, UI changes, integration boundaries) — see [`references/tdd-discipline.md`](references/tdd-discipline.md).**
+> **Required reading at phase entry — RED/GREEN/REFACTOR exit conditions, anti-patterns (test-after, mock-overuse, scope creep at GREEN, refactor-on-red), and edge cases (legacy code, incidents, UI changes, integration boundaries) — see [`references/tdd-discipline.md`](references/tdd-discipline.md).**
+
+### The iron law
+
+```
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+```
+
+If implementation got written before its test exists: **delete the implementation.** Not kept as reference, not adapted while writing the test, not commented out — deleted. Then write the failing test, observe it fail, and implement fresh. A test authored around code that already exists is test-after wearing TDD's clothes: it passes without ever having failed, which proves nothing.
 
 For each unit of work (single task in PLAN, or the entire change in DIRECT):
 
@@ -318,9 +373,9 @@ If more behavior is needed, return to Step 1 with the next test.
 
 **Goal:** A fresh perspective on the code, free from the author's recency bias.
 
-> **For the deeper discipline — why independence matters, sharpened Critical/Important/Minor definitions, when to push back on a finding, subagent prompt construction, and anti-patterns (performative agreement, fabricated findings, severity inflation, self-review) — see [`references/peer-review.md`](references/peer-review.md).**
+> **Required reading at phase entry — why independence matters, sharpened Critical/Important/Minor definitions, when to push back on a finding, subagent prompt construction, and anti-patterns (performative agreement, fabricated findings, severity inflation, self-review) — see [`references/peer-review.md`](references/peer-review.md).**
 >
-> **For the cross-cutting subagent dispatch discipline used here and in any other forge phase that fans out work — see [`references/subagent-patterns.md`](references/subagent-patterns.md).**
+> **Also required at this phase's entry — the cross-cutting subagent dispatch discipline used here and in any other forge phase that fans out work — see [`references/subagent-patterns.md`](references/subagent-patterns.md).**
 
 Spawn a review agent using the Agent tool with this prompt template:
 
@@ -414,7 +469,7 @@ For now, proceed directly to Verify.
 
 **Goal:** Capture this session's learnings into the repo's compound-engineering channels so future sessions start ahead.
 
-> **For the deeper discipline — why three explicit channels, per-channel thresholds (when to propose vs stay silent), proposal formats, anti-patterns (performative deposit, paraphrasing SKILL.md, ADR for a bug fix, batch-style proposals), and edge cases (multi-session plans, strike-caller integration, PROTOTYPE Discard/Promote, no-deposit sessions) — see [`references/retrospective.md`](references/retrospective.md).**
+> **Required reading at phase entry — why three explicit channels, per-channel thresholds (when to propose vs stay silent), proposal formats, anti-patterns (performative deposit, paraphrasing SKILL.md, ADR for a bug fix, batch-style proposals), and edge cases (multi-session plans, strike-caller integration, PROTOTYPE Discard/Promote, no-deposit sessions) — see [`references/retrospective.md`](references/retrospective.md).**
 
 Run after Verify exits green, before Finish. Check three channels in order. For each, propose a deposit *only if* its threshold is met. Do not invent deposits to make the phase feel productive — silent exit is the correct outcome when no channel qualifies.
 
@@ -498,7 +553,7 @@ Not a glossary update: existing entries, throwaway phrases, standard programming
 
 **Goal:** Capture the work and let the user decide what to do with the branch.
 
-> **For the deeper discipline — when each of the four branch options actually fits, commit-message rules (type prefix, no AI attribution, semver bump), git-safety anti-patterns (auto-push without consent, --no-verify, --amend after hook failure, force-push to shared branches), and edge cases (intentional uncommitted state, merge conflict, PR cannot open, strike caller integration) — see [`references/finishing.md`](references/finishing.md).**
+> **Required reading at phase entry — when each of the four branch options actually fits, commit-message rules (type prefix, no AI attribution, semver bump), git-safety anti-patterns (auto-push without consent, --no-verify, --amend after hook failure, force-push to shared branches), and edge cases (intentional uncommitted state, merge conflict, PR cannot open, strike caller integration) — see [`references/finishing.md`](references/finishing.md).**
 
 ### Step 1: Final commit
 
