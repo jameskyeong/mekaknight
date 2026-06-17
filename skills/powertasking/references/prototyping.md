@@ -1,6 +1,6 @@
 # PROTOTYPE Discipline — Throwaway Exploration
 
-Reference for forge's **PROTOTYPE route**. The Route → PROTOTYPE section of `SKILL.md` enforces the phase order (Clarify the question → pick the LOGIC/UI branch → Build → User review → Discard or Promote-to-Plan). This document is the deeper discipline — why prototypes are throwaway by default, the time-box and variation rules that prevent prototype-into-production drift, and what to do when the prototype reveals the original question was wrong.
+Reference for powertasking's **PROTOTYPE route**. The Route → PROTOTYPE section of `SKILL.md` enforces the phase order (Clarify the question → pick the LOGIC/UI branch → Build → User review → Discard or Promote-to-Plan). This document is the deeper discipline — why prototypes are throwaway by default, the time-box and variation rules that prevent prototype-into-production drift, and what to do when the prototype reveals the original question was wrong.
 
 The non-negotiable: **a prototype answers a question; it is not delivery.** The output is not the deliverable; the *answer* is. The prototype code itself is throwaway by default; the chosen direction goes into a fresh PLAN run with full discipline.
 
@@ -8,7 +8,7 @@ The non-negotiable: **a prototype answers a question; it is not delivery.** The 
 
 ## Why PROTOTYPE is a route, not just "use DIRECT"
 
-The DIRECT and PLAN routes carry forge's full discipline: TDD, Peer-review, Verify, Finish branch decision. That discipline is appropriate when the goal is delivery. For exploration — "how should this look", "try a few approaches", "I'm not sure which design fits" — the discipline becomes friction. You cannot write a failing test for "looks better than the alternative." TDD does not apply to a question whose answer is "let me see them side by side."
+The DIRECT and PLAN routes carry powertasking's full discipline: TDD, Peer-review, Verify, Finish branch decision. That discipline is appropriate when the goal is delivery. For exploration — "how should this look", "try a few approaches", "I'm not sure which design fits" — the discipline becomes friction. You cannot write a failing test for "looks better than the alternative." TDD does not apply to a question whose answer is "let me see them side by side."
 
 A dedicated route makes the discipline relaxation explicit and scoped. It says: for this work, TDD is relaxed, multiple variations are expected, output is throwaway by default. The user knows the rules are different; the agent does not silently drop discipline that would otherwise apply.
 
@@ -99,7 +99,7 @@ Prototype code does not require tests. Specifically:
 - No Peer-review subagent dispatch. The user is the reviewer.
 - No Verify suite expansion. The full test suite still runs (existing tests should still pass after a prototype touches files), but no new tests are added for prototype-only code.
 
-This is the deliberate scoping mentioned above. The TDD reference module (`tdd-discipline.md`) names "throwaway spike" as a situation where TDD does not apply; PROTOTYPE is forge's first-class home for that situation.
+This is the deliberate scoping mentioned above. The TDD reference module (`tdd-discipline.md`) names "throwaway spike" as a situation where TDD does not apply; PROTOTYPE is powertasking's first-class home for that situation.
 
 **Where TDD reasserts**: when a variation is Promoted to PLAN, the PLAN run starts from scratch — fresh Clarify (with the prototype's findings as input), fresh PLAN file, fresh RED tests. The prototype code does not graduate; the answer it produced graduates.
 
@@ -234,7 +234,7 @@ If the sentence cannot be stated with the user's choice and its follow-on action
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Clarify** sharpens the question the prototype answers. Vague Clarify produces a vague question, which produces variations that do not actually answer anything comparable.
 - **Build** (in DIRECT/PLAN form) is what PROTOTYPE is *not*. PROTOTYPE's "build variations" step intentionally relaxes the discipline that DIRECT/PLAN Build enforces.

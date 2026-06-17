@@ -1,6 +1,6 @@
-# Forge — Discipline References
+# Powertasking — Discipline References
 
-This folder is forge's **discipline library**. `SKILL.md` is the orchestrator (which phase comes next, what the exit gate is). Each module here goes deeper on the discipline of a specific phase — the principles, the patterns, the anti-patterns, the edge cases — so that forge's depth no longer depends on external skills.
+This folder is powertasking's **discipline library**. `SKILL.md` is the orchestrator (which phase comes next, what the exit gate is). Each module here goes deeper on the discipline of a specific phase — the principles, the patterns, the anti-patterns, the edge cases — so that powertasking's depth no longer depends on external skills.
 
 Reading the phase's module at phase entry is **mandatory** — `SKILL.md`'s reference-loading gate enforces it. These modules hold the anti-pattern tripwires the orchestrator deliberately omits, and a tripwire that is not in context cannot interrupt anything.
 
@@ -8,7 +8,7 @@ See [ADR 0005](../../../docs/adr/0005-forge-depth-references.md) for the rationa
 
 ## Phase mapping
 
-| Forge phase | Reference module | One-line summary |
+| Powertasking phase | Reference module | One-line summary |
 |---|---|---|
 | Preflight | _(inline in SKILL.md)_ | Mechanical environment check; no separate discipline |
 | **Clarify** | [`grilling.md`](grilling.md) | Ambiguity as load-bearing signal; one-question discipline; 5-category checklist deepened |
@@ -26,7 +26,7 @@ See [ADR 0005](../../../docs/adr/0005-forge-depth-references.md) for the rationa
 
 ## Reading order
 
-If you are new to forge, read in this order:
+If you are new to powertasking, read in this order:
 
 1. **`SKILL.md`** (in the parent directory) — get the overall orchestration shape.
 2. **[`verification.md`](verification.md)** — the cross-cutting gate that every other phase consults.
@@ -36,7 +36,7 @@ If you are new to forge, read in this order:
 6. **[`subagent-patterns.md`](subagent-patterns.md)** — the cross-cutting dispatch discipline.
 7. **[`communication-style.md`](communication-style.md)** — the cross-cutting user-facing inline-gloss discipline.
 
-If you are auditing a completed `/forge` run, the relevant module is the one for whichever phase you are auditing — each module ends with a section explaining how that phase relates to the others.
+If you are auditing a completed `/powertasking` run, the relevant module is the one for whichever phase you are auditing — each module ends with a section explaining how that phase relates to the others.
 
 ## What makes a reference module a reference module
 
@@ -50,6 +50,6 @@ If you are auditing a completed `/forge` run, the relevant module is the one for
 
 Tracked in `docs/plans/forge-depth-references-vN.md`. Currently open:
 
-- `architecture.md` — gated on a decision to promote PRD-scale architecture work to a supported route. ADR 0006 rejected ARCHITECT for v2.0 because PRD-level work overlaps with the existing tracker (`/strike`, `/tag`) and exceeds forge's single-session responsibility scope. Revisitable if post-launch usage signals demand.
+- `architecture.md` — gated on a decision to promote PRD-scale architecture work to a supported route. ADR 0006 rejected ARCHITECT for v2.0 because PRD-level work overlaps with the existing tracker (`/resolve-issue`, `/report-issue`) and exceeds powertasking's single-session responsibility scope. Revisitable if post-launch usage signals demand.
 
-These modules will not be added until forge has a phase that consumes them. A module with no caller is documentation orphan; the references folder exists to back forge's orchestration, not to host orphaned discipline.
+These modules will not be added until powertasking has a phase that consumes them. A module with no caller is documentation orphan; the references folder exists to back powertasking's orchestration, not to host orphaned discipline.

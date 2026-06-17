@@ -1,21 +1,21 @@
 ---
-name: mekaknight:forge
+name: mekaknight:powertasking
 description: >-
   Self-contained development orchestrator: clarify → route → build-with-tests → review → verify → retrospective → finish.
   4-way router (DIRECT/PLAN for features, DIAGNOSE for bugs, PROTOTYPE for throwaway exploration).
   Strict TDD, relentless clarification, no-soft-language verification at every phase boundary.
   Retrospective phase proposes compound-engineering deposits (ADR / references / CONTEXT.md) before Finish.
-  Use when: 'forge', 'start working on', 'implement this', 'build this' (feature),
+  Use when: 'powertasking', 'start working on', 'implement this', 'build this' (feature),
   'fix this', 'debug this', 'diagnose this' (DIAGNOSE),
   'prototype this', 'try a design', 'explore options' (PROTOTYPE).
-  Also invoked by strike after issue selection.
+  Also invoked by resolve-issue after issue selection.
 ---
 
-# Forge — Development Orchestrator
+# Powertasking — Development Orchestrator
 
 Self-contained development orchestrator that takes raw requirements through a disciplined pipeline to produce hardened, production-grade code. No external skill dependencies.
 
-Named after the act of forging at the anvil — each phase hammers the code into shape, one strike at a time.
+Each phase hardens the work one pass at a time — no phase boundary is crossed on soft language.
 
 **For the v1.x orchestrator that uses superpowers + Matt Pocock skills, see `/mekaknight:workflow-external`.**
 
@@ -47,9 +47,9 @@ Running a phase from memory of a prior session instead of Reading the module is 
 
 ## Cross-cutting rule: phase tracking
 
-Forge instruments its own pipeline with the task tracker (TodoWrite or the environment's equivalent). An untracked phase is a silently skippable phase; the todo list makes a skipped gate visible to the user instead of discoverable only by reading the transcript.
+Powertasking instruments its own pipeline with the task tracker (TodoWrite or the environment's equivalent). An untracked phase is a silently skippable phase; the todo list makes a skipped gate visible to the user instead of discoverable only by reading the transcript.
 
-- **At forge start:** create one todo each for `Preflight`, `Clarify`, `Route`.
+- **At powertasking start:** create one todo each for `Preflight`, `Clarify`, `Route`.
 - **When Route selects:** append the route's own steps (PLAN → one todo per plan task; DIAGNOSE → Reproduce / Minimize / Investigate / Fix / Regression-prevent; PROTOTYPE → its numbered steps) plus `Peer-review` (not for PROTOTYPE), `Verify`, `Retrospective`, `Finish`.
 - **Completion rule:** a phase todo is marked completed only when its exit gate has been stated with evidence. Never mark a phase completed while its gate is unstated or failing.
 
@@ -97,7 +97,7 @@ The following phrases are **banned** in any completion claim. If you catch yours
 
 ## Cross-cutting gate: user-facing communication style
 
-Every user-facing summary forge produces — phase reports, change explanations, diff walkthroughs, completion notes — **MUST** gloss non-obvious identifiers inline on first mention. Dense identifier-only output that forces the user to read code to follow your summary is rejected.
+Every user-facing summary powertasking produces — phase reports, change explanations, diff walkthroughs, completion notes — **MUST** gloss non-obvious identifiers inline on first mention. Dense identifier-only output that forces the user to read code to follow your summary is rejected.
 
 > **For the deeper discipline — what counts as non-obvious, gloss-length budget, when to skip glossing, per-phase examples (Build / Peer-review / DIAGNOSE / Retrospective), anti-patterns (identifier soup, jargon cascades, glossing the obvious), and edge cases (user pre-established terms, code-block-only content, long names) — see [`references/communication-style.md`](references/communication-style.md).**
 
@@ -141,15 +141,15 @@ If you catch yourself writing any of these, rewrite before sending.
 
 ## Preflight: Environment check
 
-**Goal:** Confirm the project can support forge's disciplined pipeline before starting.
+**Goal:** Confirm the project can support powertasking's disciplined pipeline before starting.
 
 Run these checks and report results:
 
 1. **Git repository**: `git rev-parse --git-dir`
-   - If not a git repo → **HALT**: "This directory is not a git repository. Forge requires git for docs checkpoints and finish."
+   - If not a git repo → **HALT**: "This directory is not a git repository. Powertasking requires git for docs checkpoints and finish."
 
 2. **Test runner**: check for test scripts in `package.json`, `Makefile`, `pyproject.toml`, or equivalent
-   - If no test runner found → **HALT**: "No test runner detected. Forge enforces strict TDD — a test runner is required. Set up your test framework first, then re-run `/forge`."
+   - If no test runner found → **HALT**: "No test runner detected. Powertasking enforces strict TDD — a test runner is required. Set up your test framework first, then re-run `/powertasking`."
    - Report which test command was detected (e.g., `npm test`, `pytest`, `go test`)
 
 3. **Type checker** (optional): check for `tsconfig.json`, `mypy.ini`, `pyrightconfig.json`, or equivalent
@@ -168,7 +168,7 @@ Run these checks and report results:
 
 > **Required reading at phase entry — one-question-at-a-time grilling, recommended-answer-with-reasoning patterns, deepened 5-category checklist, approach-proposal discipline, anti-patterns (shotgun questioning, vibes-based clarify, answering your own questions), and edge cases (premature skip, no CONTEXT.md, pushback fatigue) — see [`references/grilling.md`](references/grilling.md).**
 
-If invoked from `mekaknight:strike`, use the issue title + body as starting context. If invoked standalone, use whatever the user provided. If invoked with a path to an existing plan file (`docs/plans/*.md`), skip Clarify and Route — proceed directly to Build with that plan (cross-session pickup).
+If invoked from `mekaknight:resolve-issue`, use the issue title + body as starting context. If invoked standalone, use whatever the user provided. If invoked with a path to an existing plan file (`docs/plans/*.md`), skip Clarify and Route — proceed directly to Build with that plan (cross-session pickup).
 
 ### How to question
 
@@ -222,7 +222,7 @@ Based on Clarify output, determine the work's scope. **Only one route per run.**
 
 If the work matches this pattern, inform the user and suggest alternatives:
 
-- **PRD-scale, multi-session feature**: "This is large enough to need a PRD. Consider writing one in `docs/prd/` and breaking it into multiple `/forge` sessions, each of which can be DIRECT or PLAN."
+- **PRD-scale, multi-session feature**: "This is large enough to need a PRD. Consider writing one in `docs/prd/` and breaking it into multiple `/powertasking` sessions, each of which can be DIRECT or PLAN."
 
 ### Route: DIRECT
 
@@ -281,7 +281,7 @@ If a task is blocked or unclear, surface it to the user — do NOT improvise.
 
 #### Cross-session pickup
 
-If the session ends mid-execution, the user resumes by running `/forge` with the plan file path as argument. Clarify and Route are skipped — Build picks up from the first incomplete task.
+If the session ends mid-execution, the user resumes by running `/powertasking` with the plan file path as argument. Clarify and Route are skipped — Build picks up from the first incomplete task.
 
 ### Route: DIAGNOSE
 
@@ -375,7 +375,7 @@ If more behavior is needed, return to Step 1 with the next test.
 
 > **Required reading at phase entry — why independence matters, sharpened Critical/Important/Minor definitions, when to push back on a finding, subagent prompt construction, and anti-patterns (performative agreement, fabricated findings, severity inflation, self-review) — see [`references/peer-review.md`](references/peer-review.md).**
 >
-> **Also required at this phase's entry — the cross-cutting subagent dispatch discipline used here and in any other forge phase that fans out work — see [`references/subagent-patterns.md`](references/subagent-patterns.md).**
+> **Also required at this phase's entry — the cross-cutting subagent dispatch discipline used here and in any other powertasking phase that fans out work — see [`references/subagent-patterns.md`](references/subagent-patterns.md).**
 
 Spawn a review agent using the Agent tool with this prompt template:
 
@@ -469,7 +469,7 @@ For now, proceed directly to Verify.
 
 **Goal:** Capture this session's learnings into the repo's compound-engineering channels so future sessions start ahead.
 
-> **Required reading at phase entry — why three explicit channels, per-channel thresholds (when to propose vs stay silent), proposal formats, anti-patterns (performative deposit, paraphrasing SKILL.md, ADR for a bug fix, batch-style proposals), and edge cases (multi-session plans, strike-caller integration, PROTOTYPE Discard/Promote, no-deposit sessions) — see [`references/retrospective.md`](references/retrospective.md).**
+> **Required reading at phase entry — why three explicit channels, per-channel thresholds (when to propose vs stay silent), proposal formats, anti-patterns (performative deposit, paraphrasing SKILL.md, ADR for a bug fix, batch-style proposals), and edge cases (multi-session plans, resolve-issue-caller integration, PROTOTYPE Discard/Promote, no-deposit sessions) — see [`references/retrospective.md`](references/retrospective.md).**
 
 Run after Verify exits green, before Finish. Check three channels in order. For each, propose a deposit *only if* its threshold is met. Do not invent deposits to make the phase feel productive — silent exit is the correct outcome when no channel qualifies.
 
@@ -494,7 +494,7 @@ Next ADR number = `ls docs/adr/ | wc -l + 1`, kebab-case slug.
 
 Not an ADR: bug fixes, obvious implementation details, refactors that follow existing patterns, decisions already documented.
 
-### Channel 2: Discipline references (`skills/forge/references/`)
+### Channel 2: Discipline references (`skills/powertasking/references/`)
 
 **Threshold**: A phase revealed a new failure mode, anti-pattern, edge case, or recurring issue *that the existing reference does not already cover*.
 
@@ -553,7 +553,7 @@ Not a glossary update: existing entries, throwaway phrases, standard programming
 
 **Goal:** Capture the work and let the user decide what to do with the branch.
 
-> **Required reading at phase entry — when each of the four branch options actually fits, commit-message rules (type prefix, no AI attribution, semver bump), git-safety anti-patterns (auto-push without consent, --no-verify, --amend after hook failure, force-push to shared branches), and edge cases (intentional uncommitted state, merge conflict, PR cannot open, strike caller integration) — see [`references/finishing.md`](references/finishing.md).**
+> **Required reading at phase entry — when each of the four branch options actually fits, commit-message rules (type prefix, no AI attribution, semver bump), git-safety anti-patterns (auto-push without consent, --no-verify, --amend after hook failure, force-push to shared branches), and edge cases (intentional uncommitted state, merge conflict, PR cannot open, resolve-issue caller integration) — see [`references/finishing.md`](references/finishing.md).**
 
 ### Step 1: Final commit
 
@@ -564,7 +564,7 @@ git add <implementation files>
 git commit -m "<type>: <description>"
 ```
 
-If invoked from `strike`, include the issue reference in the commit message.
+If invoked from `resolve-issue`, include the issue reference in the commit message.
 
 Skip if: not a git repo, no changes to commit, or PLAN route already produced per-task commits.
 
@@ -577,7 +577,7 @@ Present 4 options to the user:
 3. **Keep branch** — Work is paused or not ready to merge. Leave the branch as-is.
 4. **Discard** — Work is throwaway (e.g., informed a decision but won't be shipped). Delete the branch.
 
-If invoked from `strike`, note that strike will handle status transition after this step.
+If invoked from `resolve-issue`, note that resolve-issue will handle status transition after this step.
 
 Do NOT auto-merge or auto-push without the user's explicit choice.
 
@@ -590,11 +590,11 @@ Do NOT auto-merge or auto-push without the user's explicit choice.
 
 ## Caller integration
 
-### From `mekaknight:strike`
+### From `mekaknight:resolve-issue`
 
 - Clarify receives the issue title + body as starting context
 - All phases proceed normally
-- On completion, control returns to strike for Notion status transition
+- On completion, control returns to resolve-issue for Notion status transition
 
 ### Standalone usage
 
@@ -608,5 +608,5 @@ Do NOT auto-merge or auto-push without the user's explicit choice.
 
 If the user interrupts at any phase:
 - Work completed in prior phases (docs, tests, code) persists in the working tree
-- Resume by running `/forge` again with the same context or plan file path
+- Resume by running `/powertasking` again with the same context or plan file path
 - No automatic state tracking — the user decides where to pick up

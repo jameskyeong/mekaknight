@@ -1,6 +1,6 @@
 # TDD Discipline — RED → GREEN → REFACTOR
 
-Reference for forge's **Build** phase. The Build section of `SKILL.md` enforces the loop at the orchestration level; this document is the deeper discipline — the rules, the anti-patterns, the edge cases that make the loop actually work instead of becoming theater.
+Reference for powertasking's **Build** phase. The Build section of `SKILL.md` enforces the loop at the orchestration level; this document is the deeper discipline — the rules, the anti-patterns, the edge cases that make the loop actually work instead of becoming theater.
 
 The non-negotiable: **a failing test exists before a line of implementation is written.** Every shortcut around this rule produces code that looks complete but cannot be evolved with confidence later. If implementation got written before its test, the recovery is deletion and a fresh RED — not retrofitting a test around the existing code.
 
@@ -200,7 +200,7 @@ The list is short on purpose. The instinct to say "TDD does not apply to *this* 
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Clarify** must reach 0 ambiguities before Build starts. If RED makes you discover an ambiguity ("what should this return when input is empty?"), that is a Clarify failure — go back, resolve, return.
 - **Peer-review** reads the diff, not the cycle. The diff should tell the story by itself: tests added, implementation matching the tests, refactors visible as their own commits or commit-message lines.

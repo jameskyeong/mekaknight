@@ -1,6 +1,6 @@
 # DIAGNOSE Discipline — Bug-First Workflow
 
-Reference for forge's **DIAGNOSE route**. The Route → DIAGNOSE section of `SKILL.md` enforces the phase order (Reproduce → Minimize → Investigate → Fix → Regression-prevent). This document is the deeper discipline — why each step exists, the anti-patterns that turn diagnosis into guess-and-check, and what to do at the edges (cannot reproduce locally, intermittent bugs, production-only data).
+Reference for powertasking's **DIAGNOSE route**. The Route → DIAGNOSE section of `SKILL.md` enforces the phase order (Reproduce → Minimize → Investigate → Fix → Regression-prevent). This document is the deeper discipline — why each step exists, the anti-patterns that turn diagnosis into guess-and-check, and what to do at the edges (cannot reproduce locally, intermittent bugs, production-only data).
 
 The non-negotiable: **a fast, deterministic pass/fail signal that captures the bug — ideally a failing test — is the goal of Reproduce.** Everything after Reproduce is downstream of that signal. Changing code without a failing signal that proves the change matters is guess-and-check dressed up as fixing.
 
@@ -214,7 +214,7 @@ If any of the five sentences cannot be stated, the corresponding step has not ex
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Clarify** runs before DIAGNOSE selects the route — the user's reported bug becomes the input to Reproduce. A vague bug report ("something is broken") cannot start DIAGNOSE; Clarify narrows until "the failing test would look like X" is possible.
 - **Build** is folded into DIAGNOSE's Fix step (which is GREEN discipline applied to the minimized Reproduce test). The TDD discipline from `references/tdd-discipline.md` fully applies.

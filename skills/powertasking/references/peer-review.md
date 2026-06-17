@@ -1,6 +1,6 @@
 # Peer-review Discipline — Independent Diff Review
 
-Reference for forge's **Peer-review** phase. The Peer-review section of `SKILL.md` defines the surface mechanics (spawn an agent with a two-axis prompt, triage findings by severity, fix Critical/Important or explicitly defer). This document is the deeper discipline — why independence matters, how to make severity calls that are not arbitrary, what makes a review prompt actually produce useful findings, and the anti-patterns that turn the review into theater.
+Reference for powertasking's **Peer-review** phase. The Peer-review section of `SKILL.md` defines the surface mechanics (spawn an agent with a two-axis prompt, triage findings by severity, fix Critical/Important or explicitly defer). This document is the deeper discipline — why independence matters, how to make severity calls that are not arbitrary, what makes a review prompt actually produce useful findings, and the anti-patterns that turn the review into theater.
 
 The non-negotiable: **the reviewer sees the diff, not the journey.** Everything Peer-review produces is grounded in what the code now is, not in how it came to be that way. Author recency bias is the thing this phase exists to defeat.
 
@@ -12,7 +12,7 @@ The author of code has spent the last hour (or day, or week) inside the change. 
 
 A fresh reviewer reads only the artifact. They have no version-in-their-head to fill in gaps. If the code does not communicate the intent without the author's memory, the reviewer surfaces it as a finding. That is the value: not new information, but the *absence* of the author's memory.
 
-This is also why peer-review uses a separate subagent in forge rather than asking the same agent to self-review. The same agent, re-reading its own work, has the version-in-memory problem at full strength. A subagent dispatched with only the diff and the spec has no such version; it reviews what is actually there.
+This is also why peer-review uses a separate subagent in powertasking rather than asking the same agent to self-review. The same agent, re-reading its own work, has the version-in-memory problem at full strength. A subagent dispatched with only the diff and the spec has no such version; it reviews what is actually there.
 
 ---
 
@@ -84,7 +84,7 @@ Minor findings are reported, not blocked. They do not cause re-loops, they do no
 
 ## When to push back on a finding
 
-The agent who is implementing forge may receive a finding that is technically wrong — the reviewer is missing context, misreading the diff, or pattern-matching to a Standards rule that does not apply. The discipline:
+The agent who is implementing powertasking may receive a finding that is technically wrong — the reviewer is missing context, misreading the diff, or pattern-matching to a Standards rule that does not apply. The discipline:
 
 - Push back with reasoning. State the specific reason the finding is wrong: "The reviewer flagged X as a regression, but the test the reviewer cited is exercising the old contract that ADR 0007 explicitly retired. The new contract is correct."
 - Do not silently ignore. If a finding is reviewed and rejected, that rejection is captured: "Critical at src/auth.ts:42 — rejected because <reason>."
@@ -150,7 +150,7 @@ The fix: the sharpened severity definitions above. When in doubt, the reviewer s
 
 The implementing agent reading its own diff and calling it Peer-review. The author bias problem in full force. The findings will all be either too narrow ("I added a comment that could be more precise") or too broad ("this whole change should be different"), with little in the middle that an independent reviewer would surface.
 
-The fix: forge dispatches an actual subagent for this phase. The implementing agent is allowed to triage the findings, but is not allowed to *be* the reviewer.
+The fix: powertasking dispatches an actual subagent for this phase. The implementing agent is allowed to triage the findings, but is not allowed to *be* the reviewer.
 
 ---
 
@@ -182,7 +182,7 @@ The user is allowed to defer an Important finding. The discipline:
 
 - The deferral is captured in the commit message or in a follow-up issue, not lost.
 - The deferral note states *what* was deferred and *why* — "deferring the missing test for the success path; will add in PR #N."
-- Critical findings cannot be deferred. If the user wants to ship a Critical finding unaddressed, that is a project-level decision (the user, not Peer-review, owns ship/no-ship) — but forge's role is to surface the cost clearly, not to silently agree.
+- Critical findings cannot be deferred. If the user wants to ship a Critical finding unaddressed, that is a project-level decision (the user, not Peer-review, owns ship/no-ship) — but powertasking's role is to surface the cost clearly, not to silently agree.
 
 ### The reviewer makes a Critical mistake (e.g., calls correct code broken)
 
@@ -204,7 +204,7 @@ If the implementing agent cannot state this sentence with a specific list of fin
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Clarify** produces the Spec axis content. A vague Clarify produces a weak Spec axis, which makes Peer-review's spec-compliance review weaker. Peer-review can flag this — "the spec is too vague to verify" is itself a finding — but the deep fix is upstream.
 - **Build** produces the diff Peer-review reads. A Build that skipped REFACTOR will produce a diff with structural issues the reviewer will flag; a Build that scope-crept at GREEN will produce a diff with implementation outside the spec. Both are Build-level discipline failures surfacing here.

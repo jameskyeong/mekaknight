@@ -2,7 +2,7 @@
 
 A **static check + golden fixture** regression net for the skill prose. Catches drift between what each skill *declares* it does (cross-cutting gates, inline-gloss rule, banned-language list) and what its content actually contains.
 
-**v1 limit**: this does NOT invoke `/forge` headlessly. It checks the skill files themselves + hand-written fixture samples representing ideal forge output. Real session evals (running `claude -p` against fixture prompts) are v2.
+**v1 limit**: this does NOT invoke `/powertasking` headlessly. It checks the skill files themselves + hand-written fixture samples representing ideal powertasking output. Real session evals (running `claude -p` against fixture prompts) are v2.
 
 See [ADR 0009](../docs/adr/0009-eval-discipline-v1.md) for the static-vs-session-eval scoping decision.
 
@@ -25,11 +25,11 @@ eval/
 ├── README.md                       ← this file
 ├── run.mjs                         ← orchestrator
 ├── checks/                         ← reusable check modules
-│   ├── no-banned-phrases.mjs       ← forge verification banned soft-language
+│   ├── no-banned-phrases.mjs       ← powertasking verification banned soft-language
 │   ├── inline-gloss-discipline.mjs ← first-mention gloss + identifier-soup detection
 │   ├── version-sync.mjs            ← package.json ↔ marketplace.json
 │   ├── link-validity.mjs           ← markdown link target existence
-│   └── cross-cutting-gates-present.mjs ← skills declare/inherit forge gates
+│   └── cross-cutting-gates-present.mjs ← skills declare/inherit powertasking gates
 └── fixtures/                       ← hand-written sample outputs
     ├── good-build-summary.md       ← positive — should pass declared checks
     ├── good-diagnose-conclusion.md ← positive
@@ -93,14 +93,14 @@ Negative fixtures are the unit tests for the checks themselves. If you change a 
 ## Adding a new fixture
 
 1. Drop a markdown file in `eval/fixtures/` with the frontmatter shown above.
-2. Make the body realistic — a real shape of forge output, not synthetic test data.
+2. Make the body realistic — a real shape of powertasking output, not synthetic test data.
 3. `npm run eval` — confirm it runs and passes (positive) or triggers (negative) the declared checks.
 
 ---
 
 ## Why static + fixtures (and not real session eval) for v1
 
-A "real" eval would call `claude -p "<prompt>"` against each fixture, capture forge's output, and apply the same checks. We deliberately deferred that to v2:
+A "real" eval would call `claude -p "<prompt>"` against each fixture, capture powertasking's output, and apply the same checks. We deliberately deferred that to v2:
 
 - **API cost** — each fixture is a real Claude session.
 - **Non-determinism** — same prompt produces different outputs; check criteria must be structural, which is harder to write.

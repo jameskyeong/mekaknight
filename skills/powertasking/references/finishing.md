@@ -1,8 +1,8 @@
 # Finish Discipline — Commit and Branch Decision
 
-Reference for forge's **Finish** phase. The Finish section of `SKILL.md` enforces the surface mechanics (commit if uncommitted, present four branch options, no auto-merge or auto-push). This document is the deeper discipline — when each branch option is the right call, the git-safety rules that prevent silent damage, and the awkward edges (working tree not clean, conflicts, PR cannot be opened, strike caller).
+Reference for powertasking's **Finish** phase. The Finish section of `SKILL.md` enforces the surface mechanics (commit if uncommitted, present four branch options, no auto-merge or auto-push). This document is the deeper discipline — when each branch option is the right call, the git-safety rules that prevent silent damage, and the awkward edges (working tree not clean, conflicts, PR cannot be opened, resolve-issue caller).
 
-The non-negotiable: **the branch decision is the user's, not the agent's.** Forge's job is to surface the four options clearly and capture the choice; it does not auto-merge, auto-push, or auto-delete.
+The non-negotiable: **the branch decision is the user's, not the agent's.** Powertasking's job is to surface the four options clearly and capture the choice; it does not auto-merge, auto-push, or auto-delete.
 
 ---
 
@@ -205,15 +205,15 @@ The user explicitly wants to leave a half-written file uncommitted (often a scra
 - Do not run `git add .` blindly; you would accidentally commit the scratch.
 - The Finish exit sentence captures this: "User chose: Keep branch. Intentional uncommitted state: <files>."
 
-### Strike caller integration
+### Resolve-issue caller integration
 
-When forge is invoked from `mekaknight:strike`, Finish has one extra responsibility: signal back to strike for Notion status transition. The discipline:
+When powertasking is invoked from `mekaknight:resolve-issue`, Finish has one extra responsibility: signal back to resolve-issue for Notion status transition. The discipline:
 
-- Forge still presents the four options to the user.
-- After the user's choice, forge passes control back to strike with the outcome.
-- Strike (not forge) handles the Notion update.
+- Powertasking still presents the four options to the user.
+- After the user's choice, powertasking passes control back to resolve-issue with the outcome.
+- Resolve-issue (not powertasking) handles the Notion update.
 
-The branch decision and the issue tracker update are separate steps owned by separate skills. Forge does not touch Notion directly; strike does not make the branch decision.
+The branch decision and the issue tracker update are separate steps owned by separate skills. Powertasking does not touch Notion directly; resolve-issue does not make the branch decision.
 
 ---
 
@@ -237,7 +237,7 @@ If the sentence cannot be stated with the option and the evidence, Finish has no
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Verify** must be green before Finish runs. A Finish on a red state ships broken code, and "fix it in main" is the wrong place to do that work.
 - **Peer-review** must have its Critical and Important findings resolved or explicitly deferred before Finish. A Finish that bypasses unresolved Critical findings is the most expensive kind of shortcut.

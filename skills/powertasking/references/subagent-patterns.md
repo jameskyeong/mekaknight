@@ -1,6 +1,6 @@
 # Subagent Dispatch Discipline
 
-Reference for forge's **subagent usage** across all phases. The Peer-review phase has its own subagent dispatch case (covered in `references/peer-review.md`); this document is the cross-cutting discipline for every other dispatch — when to fan out, how to construct prompts that produce auditable work, how to fan back in, and the anti-patterns that turn dispatch from a tool into an abdication.
+Reference for powertasking's **subagent usage** across all phases. The Peer-review phase has its own subagent dispatch case (covered in `references/peer-review.md`); this document is the cross-cutting discipline for every other dispatch — when to fan out, how to construct prompts that produce auditable work, how to fan back in, and the anti-patterns that turn dispatch from a tool into an abdication.
 
 The non-negotiable: **dispatching a subagent does not transfer responsibility.** The orchestrator still owns the work product. The subagent's report is one input the orchestrator audits, not a black-box outcome to accept on faith.
 
@@ -50,7 +50,7 @@ Are there 2+ pieces of work that genuinely do not share state?
 Do it inline.
 ```
 
-Most of forge's work is inline. Dispatch is for the cases above, not the default.
+Most of powertasking's work is inline. Dispatch is for the cases above, not the default.
 
 ---
 
@@ -166,7 +166,7 @@ The fix: every dispatch prompt names the scope (which files), the criteria (what
 
 Subagent A dispatches subagent B, which dispatches subagent C. The orchestrator can no longer audit any of it — each layer adds an unaudited claim. By the time the result returns, no one knows whether the underlying work was actually done.
 
-The fix: forge's orchestrator dispatches; subagents do not dispatch further subagents (with rare exceptions for well-scoped recursive cases). If a subagent's work needs further fan-out, the subagent reports back and the orchestrator dispatches the next layer.
+The fix: powertasking's orchestrator dispatches; subagents do not dispatch further subagents (with rare exceptions for well-scoped recursive cases). If a subagent's work needs further fan-out, the subagent reports back and the orchestrator dispatches the next layer.
 
 ---
 
@@ -209,7 +209,7 @@ The middle path: the orchestrator reads the subagent's raw evidence, compares it
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Clarify** is rarely dispatched — the value of Clarify is the orchestrator's direct interaction with the user, and a subagent loses the user-facing channel. Dispatch in Clarify is for sub-tasks like "search the codebase for existing patterns that answer this question."
 - **Route → PLAN** sub-step is inline; the plan file is a contract between the orchestrator and the user, not something to delegate.

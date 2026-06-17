@@ -1,8 +1,8 @@
 # Issue Grouping Algorithm
 
-Canonical auto-grouping algorithm used by `/tag` (during issue parsing) and `/strike` (during multi-issue selection). Both skills MUST follow this algorithm so grouping behavior is consistent.
+Canonical auto-grouping algorithm used by `/report-issue` (during issue parsing) and `/resolve-issue` (during multi-issue selection). Both skills MUST follow this algorithm so grouping behavior is consistent.
 
-The goal: cluster issues that genuinely belong together so a single forge session (or a single Notion issue) addresses related problems with shared context. Over-grouping pollutes the result with unrelated work; under-grouping misses obvious affinities.
+The goal: cluster issues that genuinely belong together so a single powertasking session (or a single Notion issue) addresses related problems with shared context. Over-grouping pollutes the result with unrelated work; under-grouping misses obvious affinities.
 
 ---
 
@@ -20,7 +20,7 @@ Each signal is **binary** (1 or 0) per pair. A pair has a score from 0 to 3.
 
 There is also one **strong signal** that bypasses the dimension count:
 
-- **Code-file overlap** — the two issues touch overlapping files or modules in the codebase. `/tag`'s Codebase verification step surfaces this directly; `/strike` infers it from issue bodies when available.
+- **Code-file overlap** — the two issues touch overlapping files or modules in the codebase. `/report-issue`'s Codebase verification step surfaces this directly; `/resolve-issue` infers it from issue bodies when available.
 
 ---
 
@@ -48,7 +48,7 @@ Transitive closure is intentional: if A↔B and B↔C are both linkable, all thr
 
 ## User gate (mandatory before commit)
 
-Before either skill *commits* to the grouping (writing Notion pages in `/tag`, invoking `/forge` in `/strike`), the proposed groups MUST be shown to the user with a one-line rationale per pair link. Users override by replying with a correction.
+Before either skill *commits* to the grouping (writing Notion pages in `/report-issue`, invoking `/powertasking` in `/resolve-issue`), the proposed groups MUST be shown to the user with a one-line rationale per pair link. Users override by replying with a correction.
 
 Display format:
 
@@ -95,17 +95,17 @@ P1 + P1 ≠ group. Severity is not a dimension — two unrelated P1s do not belo
 
 **Cure**: severity does not appear anywhere in the three dimensions list. If a code change adds severity as a dimension, reject the change.
 
-### Cross-status grouping in /strike
+### Cross-status grouping in /resolve-issue
 
-`/strike` should not propose grouping a "pending" issue with an "in progress" issue. The user picked them from different lists; treating them as a unit collapses meaningful state distinction.
+`/resolve-issue` should not propose grouping a "pending" issue with an "in progress" issue. The user picked them from different lists; treating them as a unit collapses meaningful state distinction.
 
-**Cure**: `/strike` partitions selections by status before running the grouping algorithm. Run grouping within each status partition, present them as separate group sets.
+**Cure**: `/resolve-issue` partitions selections by status before running the grouping algorithm. Run grouping within each status partition, present them as separate group sets.
 
 ### Grouping across branches
 
 Two issues that touch the same file but are scheduled for different branches/sprints should not be force-grouped just because their codebase overlap signal fires.
 
-**Cure**: if `/tag`'s codebase verification reveals "already in progress on branch X" for one item but the other is fresh, downgrade the code-file overlap signal for that pair. Skills should annotate this in the rationale ("would group on auth/* but item A is already shipping on feat/auth-redesign").
+**Cure**: if `/report-issue`'s codebase verification reveals "already in progress on branch X" for one item but the other is fresh, downgrade the code-file overlap signal for that pair. Skills should annotate this in the rationale ("would group on auth/* but item A is already shipping on feat/auth-redesign").
 
 ---
 

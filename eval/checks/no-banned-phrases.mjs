@@ -11,7 +11,7 @@ const BANNED = [
 export const id = 'no-banned-phrases';
 
 export const description =
-  'Output must not contain forge-verification banned soft-language phrases.';
+  'Output must not contain powertasking-verification banned soft-language phrases.';
 
 export function check(content) {
   const findings = [];

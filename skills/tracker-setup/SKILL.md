@@ -1,13 +1,13 @@
 ---
-name: mekaknight:link
+name: mekaknight:tracker-setup
 description: >-
   Configure Notion issue tracker integration. Guides you through API key setup,
   database connection, property mapping, template detection, and defaults.
-  Use when: 'link', 'connect tracker', or when tag/strike detects missing
+  Use when: 'tracker-setup', 'connect tracker', or when report-issue/resolve-issue detects missing
   configuration.
 ---
 
-# Link — Notion Issue Tracker Setup
+# Tracker-setup — Notion Issue Tracker Setup
 
 Creates a per-project `.claude/tracking-issue.json` configuration file, step by step.
 
@@ -536,8 +536,8 @@ Notion Issue Tracker Setup Complete
   Default assignee:     {name or "not set"}
   .gitignore:           {included}
 
-You can now use /mekaknight:tag to file issues,
-and /mekaknight:strike to process them.
+You can now use /mekaknight:report-issue to file issues,
+and /mekaknight:resolve-issue to process them.
 ```
 
 **WARNING: Never include the API key value in the summary.**

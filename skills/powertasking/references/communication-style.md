@@ -1,6 +1,6 @@
 # Communication Style — Inline-Gloss Discipline
 
-Reference for forge's **cross-cutting communication gate**. `SKILL.md` defines the surface rule (gloss non-obvious identifiers inline on first mention, 5–15 char gloss, three forbidden shapes). This document is the deeper discipline — why dense identifier-only output breaks user understanding, the subtle ways agents fall into it, what to do at each phase boundary, and the edge cases.
+Reference for powertasking's **cross-cutting communication gate**. `SKILL.md` defines the surface rule (gloss non-obvious identifiers inline on first mention, 5–15 char gloss, three forbidden shapes). This document is the deeper discipline — why dense identifier-only output breaks user understanding, the subtle ways agents fall into it, what to do at each phase boundary, and the edge cases.
 
 The non-negotiable: **a user-facing summary is for the user, not for the code.** If the reader cannot follow the change without opening the file, the summary failed — regardless of how technically accurate the identifiers are.
 
@@ -8,9 +8,9 @@ The non-negotiable: **a user-facing summary is for the user, not for the code.**
 
 ## The core principle
 
-Forge produces user-facing text at almost every phase boundary: Clarify questions, Route decisions, Build summaries, Peer-review reports, DIAGNOSE conclusions, Verify reports, Retrospective proposals, Finish notes. Each of these is the **only window** the user has into what just happened — they did not watch the tool calls, they did not read the diff line-by-line, they are not (yet) holding the code's vocabulary in their head.
+Powertasking produces user-facing text at almost every phase boundary: Clarify questions, Route decisions, Build summaries, Peer-review reports, DIAGNOSE conclusions, Verify reports, Retrospective proposals, Finish notes. Each of these is the **only window** the user has into what just happened — they did not watch the tool calls, they did not read the diff line-by-line, they are not (yet) holding the code's vocabulary in their head.
 
-When forge writes `combineQuality 에서 curvature 분기 제거`, the user sees four atoms — three of them opaque without grepping the codebase. The technical content is correct; the communication is broken. The fix is not to dumb the content down. The fix is to **carry the identifier's meaning forward in the prose** so the reader does not have to re-derive it.
+When powertasking writes `combineQuality 에서 curvature 분기 제거`, the user sees four atoms — three of them opaque without grepping the codebase. The technical content is correct; the communication is broken. The fix is not to dumb the content down. The fix is to **carry the identifier's meaning forward in the prose** so the reader does not have to re-derive it.
 
 A glossed summary has three components:
 
@@ -77,7 +77,7 @@ When the natural gloss exceeds budget, **lift the explanation into the prose its
 
 ## Per-phase patterns
 
-Each forge phase produces different shapes of user-facing text. The rule is the same; the application differs.
+Each powertasking phase produces different shapes of user-facing text. The rule is the same; the application differs.
 
 ### Clarify
 
@@ -214,9 +214,9 @@ A 30-character identifier (e.g., `validateStrokeAgainstGuideShape`) with a 12-ch
 1. **Trust the name** — if the identifier itself is self-glossing (`validateStrokeAgainstGuideShape` reads in English), skip the parenthetical and explain the *role* in the surrounding prose instead.
 2. **Alias it** — introduce it once with gloss, then refer to it by a short noun phrase: `validateStrokeAgainstGuideShape(검증 함수)` once, then "검증 함수" subsequently.
 
-### Subagent output passing through forge
+### Subagent output passing through powertasking
 
-When a Peer-review subagent or DIAGNOSE subagent returns findings to forge, those findings *enter* user-facing text. Forge must gloss any unglossed identifiers in the subagent's output before relaying. Do not pass identifier soup through.
+When a Peer-review subagent or DIAGNOSE subagent returns findings to powertasking, those findings *enter* user-facing text. Powertasking must gloss any unglossed identifiers in the subagent's output before relaying. Do not pass identifier soup through.
 
 ### Non-Korean responses
 
@@ -231,14 +231,14 @@ The 5–15 character budget is in the response language's natural units (charact
 
 ### Code-review and diff narration
 
-When forge narrates a diff (typically in Peer-review or Verify), every identifier in the narration follows the rule. The diff itself, shown in a code block, does not.
+When powertasking narrates a diff (typically in Peer-review or Verify), every identifier in the narration follows the rule. The diff itself, shown in a code block, does not.
 
 ---
 
 ## Why this rule earns its place
 
-Without this discipline, forge's correctness-of-content masks failure-of-communication. The user reads "combineQuality 에서 curvature 분기 제거", accepts it because forge has been correct in this session before, and only later realizes — when grepping or when the next bug surfaces — that they did not actually understand what changed. The cost lands in the next session: re-reading code to recover context, asking forge to re-explain, or worst, approving a change whose implications the user mis-modeled.
+Without this discipline, powertasking's correctness-of-content masks failure-of-communication. The user reads "combineQuality 에서 curvature 분기 제거", accepts it because powertasking has been correct in this session before, and only later realizes — when grepping or when the next bug surfaces — that they did not actually understand what changed. The cost lands in the next session: re-reading code to recover context, asking powertasking to re-explain, or worst, approving a change whose implications the user mis-modeled.
 
 Glossing on first mention reverses this. The reader builds the mental model alongside the prose, retains it across the session, and can grep with confidence because each identifier was anchored to its role on its first appearance.
 
-The rule trades a few characters per identifier for a durable, shared vocabulary inside the session. That is a trade forge always wins.
+The rule trades a few characters per identifier for a durable, shared vocabulary inside the session. That is a trade powertasking always wins.

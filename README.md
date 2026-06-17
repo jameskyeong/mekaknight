@@ -16,32 +16,32 @@
 
 <img align="right" src="docs/mekaknight-hero.jpg" width="220" alt="mekaknight character" />
 
-Built on two pillars: **`/forge`** — a self-contained development orchestrator that drives the full flow from one command — and **compound engineering** baked into the structure, so every session deposits artifacts that lift the next one.
+Built on two pillars: **`/powertasking`** — a self-contained development orchestrator that drives the full flow from one command — and **compound engineering** baked into the structure, so every session deposits artifacts that lift the next one.
 
 The rest (issue tracking, inspection) are opt-in utilities — supplementary, not required.
 
 <br clear="right" />
 
-## How `/forge` is different from other skill packs
+## How `/powertasking` is different from other skill packs
 
-Most skill packs (superpowers, Matt Pocock, etc.) hand you a toolbox of discrete disciplines and ask you to remember which one to invoke when. Each invocation starts fresh. `/forge` inverts both halves:
+Most skill packs (superpowers, Matt Pocock, etc.) hand you a toolbox of discrete disciplines and ask you to remember which one to invoke when. Each invocation starts fresh. `/powertasking` inverts both halves:
 
 ### Pillar 1 — One command, smart pipeline
 
-1. **One command, full pipeline.** You type `/forge` (or `/forge fix the login bug`). Forge runs the whole flow — you never pick which sub-skill to call next.
-2. **Auto-routing by intent.** After Clarify, forge *infers* what kind of work this is and picks one of 4 routes. You don't choose; it decides.
+1. **One command, full pipeline.** You type `/powertasking` (or `/powertasking fix the login bug`). Powertasking runs the whole flow — you never pick which sub-skill to call next.
+2. **Auto-routing by intent.** After Clarify, powertasking *infers* what kind of work this is and picks one of 4 routes. You don't choose; it decides.
 3. **Different phase shapes per route.** DIAGNOSE writes the reproduction test before the fix. PROTOTYPE relaxes TDD on purpose. These aren't relabeled flows — they're different phase orders.
 4. **No-soft-language verification.** Every phase boundary rejects "should work", "seems fine", "looks good". Verification means running the command and observing the output.
-5. **Tracker-free core.** Forge itself never reads or writes Notion. Issue tracking is a separate, opt-in surface.
-6. **Self-contained.** Zero dependency on superpowers, Matt Pocock, or any other skill pack — every discipline lives inside `skills/forge/references/`. See [ADR 0001](docs/adr/0001-self-contained-orchestrator.md).
+5. **Tracker-free core.** Powertasking itself never reads or writes Notion. Issue tracking is a separate, opt-in surface.
+6. **Self-contained.** Zero dependency on superpowers, Matt Pocock, or any other skill pack — every discipline lives inside `skills/powertasking/references/`. See [ADR 0001](docs/adr/0001-self-contained-orchestrator.md).
 
 ### Pillar 2 — Compound engineering, in one skill
 
-Each `/forge` session deposits durable artifacts in your repo so future sessions start ahead. **Five channels, all automated — bundled into one orchestrator**, no skill composition required. Discipline runs as part of the same flow that builds the code:
+Each `/powertasking` session deposits durable artifacts in your repo so future sessions start ahead. **Five channels, all automated — bundled into one orchestrator**, no skill composition required. Discipline runs as part of the same flow that builds the code:
 
-| Channel | How forge deposits | What compounds |
+| Channel | How powertasking deposits | What compounds |
 |---|---|---|
-| **Plan files** | Auto — PLAN route writes `docs/plans/<feature>.md` | Resumable contracts. `/forge docs/plans/<feature>.md` re-enters from the first incomplete task across sessions. |
+| **Plan files** | Auto — PLAN route writes `docs/plans/<feature>.md` | Resumable contracts. `/powertasking docs/plans/<feature>.md` re-enters from the first incomplete task across sessions. |
 | **Regression tests** | Auto — DIAGNOSE route adds the *minimized* reproduction test to the suite permanently | Bugs compound into protection. The net grows with every fix. |
 | **ADRs** | Auto-prompted — **Retrospective phase** proposes an ADR when an architectural choice was made | Decision history accumulates in `docs/adr/`. Future sessions know *why*. |
 | **Discipline references** | Auto-prompted — Retrospective proposes a `references/<phase>.md` append when a new failure mode surfaces | In-repo, editable discipline that grows with the project. Not vendor-locked. |
@@ -51,11 +51,11 @@ The Retrospective phase runs between Verify and Finish, checks each channel agai
 
 > Your repo gets *easier to work in* over time. That's the compound part.
 
-## `/forge` — Development Orchestrator
+## `/powertasking` — Development Orchestrator
 
 ### The 4-way router
 
-After Clarify, forge picks **one** route based on the kind of work. Each route is a meaningfully different phase shape — not the same flow renamed.
+After Clarify, powertasking picks **one** route based on the kind of work. Each route is a meaningfully different phase shape — not the same flow renamed.
 
 | Route | When | Phase shape | Why it's different |
 |---|---|---|---|
@@ -66,9 +66,9 @@ After Clarify, forge picks **one** route based on the kind of work. Each route i
 
 ### Flexible entry & resume
 
-- **Resume mid-flow** — `/forge docs/plans/<feature>.md` re-enters the plan, skips Clarify+Route, picks up from the first incomplete task.
+- **Resume mid-flow** — `/powertasking docs/plans/<feature>.md` re-enters the plan, skips Clarify+Route, picks up from the first incomplete task.
 - **Skip Clarify** — say "skip clarify" or "requirements are clear" when you've already specced the work.
-- **Called from `/strike`** — the Notion issue title + body seeds Clarify automatically.
+- **Called from `/resolve-issue`** — the Notion issue title + body seeds Clarify automatically.
 
 ### Phases at a glance
 
@@ -94,10 +94,10 @@ Ships in v2.0 but not the v2.0 headline — the author doesn't use them daily an
 
 | Command | What it does |
 |---|---|
-| `/lock` | v0.1 inspection for Supabase RLS gaps, secret-key client exposure (Next.js `"use client"` paradigm), missing Stripe webhook signatures |
-| `/launch` | v0.1 security GO / NO-GO deploy verdict from lock's findings (security-only by design — multi-axis aggregation is not promised, see [ADR 0010](docs/adr/0010-launch-v0.1-security-only.md)) |
+| `/security-check` | v0.1 inspection for Supabase RLS gaps, secret-key client exposure (Next.js `"use client"` paradigm), missing Stripe webhook signatures |
+| `/ship-check` | v0.1 security GO / NO-GO deploy verdict from security-check's findings (security-only by design — multi-axis aggregation is not promised, see [ADR 0010](docs/adr/0010-launch-v0.1-security-only.md)) |
 
-> **Framework note**: lock's secret-key check assumes a Next.js-style client/server boundary. SvelteKit / Nuxt / Remix may receive false PASSes on that specific check — manual review recommended for those stacks until framework-specific detection lands.
+> **Framework note**: security-check's secret-key check assumes a Next.js-style client/server boundary. SvelteKit / Nuxt / Remix may receive false PASSes on that specific check — manual review recommended for those stacks until framework-specific detection lands.
 
 ### 🗂 Notion issue tracking (optional integration)
 
@@ -105,9 +105,9 @@ Notion-backed issue lifecycle. From a Slack-pasted blob of bug reports to groupe
 
 | Command | What it does |
 |---|---|
-| `/link` | One-time Notion connection — API key, database, property mapping, defaults |
-| `/tag` | Parse a prompt into issues, auto-group related items, verify against the codebase, create pages |
-| `/strike` | Pick a pending issue, call `/forge` to implement, update status with a human-readable outcome note |
+| `/tracker-setup` | One-time Notion connection — API key, database, property mapping, defaults |
+| `/report-issue` | Parse a prompt into issues, auto-group related items, verify against the codebase, create pages |
+| `/resolve-issue` | Pick a pending issue, call `/powertasking` to implement, update status with a human-readable outcome note |
 
 **Why it's different** — issue titles are written as user-visible problems, not git commit messages. Cross-functional readers (PMs, support, customers) can scan the tracker without engineering context.
 
@@ -121,8 +121,8 @@ claude plugins install mekaknight
 ## Requirements
 
 - [Claude Code](https://claude.ai/claude-code) — required for all skills.
-- **`/forge`, `/lock`, `/launch`** — no external dependencies.
-- **`/link`, `/tag`, `/strike`** — `curl`, `jq`, and a [Notion Internal Integration](https://www.notion.so/my-integrations) token.
+- **`/powertasking`, `/security-check`, `/ship-check`** — no external dependencies.
+- **`/tracker-setup`, `/report-issue`, `/resolve-issue`** — `curl`, `jq`, and a [Notion Internal Integration](https://www.notion.so/my-integrations) token.
 
 ## License
 

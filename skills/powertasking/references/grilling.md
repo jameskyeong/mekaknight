@@ -1,6 +1,6 @@
 # Clarify Discipline — Grilling for Ambiguity
 
-Reference for forge's **Clarify** phase. The Clarify section of `SKILL.md` enforces the surface rule (one question at a time; recommended answer with reasoning; ambiguity checklist must reach zero; 2-3 approaches proposed before Route). This document is the deeper discipline — why the rule exists, how to actually grill an ambiguity to the ground, and what to do at the awkward edges (the user wants to skip, no domain doc exists, every question feels like friction).
+Reference for powertasking's **Clarify** phase. The Clarify section of `SKILL.md` enforces the surface rule (one question at a time; recommended answer with reasoning; ambiguity checklist must reach zero; 2-3 approaches proposed before Route). This document is the deeper discipline — why the rule exists, how to actually grill an ambiguity to the ground, and what to do at the awkward edges (the user wants to skip, no domain doc exists, every question feels like friction).
 
 The non-negotiable: **ambiguity is a load-bearing signal, not friction.** Every question you do not ask now becomes a question you answer wrong later, in code, where it costs much more to revisit.
 
@@ -212,7 +212,7 @@ The user is frustrated, the questions feel slow, the user wants to ship. Two fai
 
 The middle path: triage your own list. Ask the **single most decision-blocking question** you have. If the user answers that, you may find the rest resolves itself or can be deferred to a follow-up. The user's irritation is signal that the questions feel low-value — the right response is to raise the per-question value, not to drop the discipline.
 
-### Recurring user across many `/forge` sessions
+### Recurring user across many `/powertasking` sessions
 
 If the same user has answered "we always use Postgres for new schemas" five times, the agent should not ask a sixth. The discipline is to capture standing answers in `CONTEXT.md` or `CLAUDE.md` so they stop being Clarify-time questions.
 
@@ -240,7 +240,7 @@ If either half cannot be stated, Clarify has not exited. Either complete the mis
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Route** (PLAN sub-step) reads the Clarify output to size the work and write the plan file. A Clarify exit with hand-wavy success criteria produces a plan file that cannot be executed — the missing detail surfaces at Build time and forces a re-Clarify.
 - **Build (TDD)** depends on Clarify having produced a sharp success test. The very first RED test in Build should be one of the success tests Clarify named. If you cannot write that test from Clarify's output, Clarify did not exit cleanly.

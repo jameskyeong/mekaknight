@@ -1,14 +1,14 @@
 # Retrospective Discipline — Compounding Deposit
 
-Reference for forge's **Retrospective** phase. The Retrospective section of `SKILL.md` enforces the surface mechanics (run between Verify and Finish, three channel checks, propose-not-impose). This document is the deeper discipline — why the phase exists, per-channel thresholds, anti-patterns, and edge cases.
+Reference for powertasking's **Retrospective** phase. The Retrospective section of `SKILL.md` enforces the surface mechanics (run between Verify and Finish, three channel checks, propose-not-impose). This document is the deeper discipline — why the phase exists, per-channel thresholds, anti-patterns, and edge cases.
 
-The non-negotiable: **the deposit decision is the user's, not the agent's.** Forge proposes; the user accepts, edits, or skips. Performative deposits — ADRs for one-line CSS fixes, glossary entries for terms that already exist, references appended with paraphrased SKILL.md content — are worse than no deposit at all.
+The non-negotiable: **the deposit decision is the user's, not the agent's.** Powertasking proposes; the user accepts, edits, or skips. Performative deposits — ADRs for one-line CSS fixes, glossary entries for terms that already exist, references appended with paraphrased SKILL.md content — are worse than no deposit at all.
 
 ---
 
 ## Why Retrospective is an explicit phase
 
-Forge's compound engineering pillar rests on five channels: plan files, DIAGNOSE regression tests, ADRs, discipline references, and CONTEXT.md domain glossary. Two of them — plan files (PLAN route) and regression tests (DIAGNOSE route) — deposit automatically as a side effect of running the route. The other three do not.
+Powertasking's compound engineering pillar rests on five channels: plan files, DIAGNOSE regression tests, ADRs, discipline references, and CONTEXT.md domain glossary. Two of them — plan files (PLAN route) and regression tests (DIAGNOSE route) — deposit automatically as a side effect of running the route. The other three do not.
 
 Without an explicit prompt, ADRs / references / CONTEXT.md only grow when the user remembers to update them. In practice that means they don't grow. The compounding promise becomes infrastructure-only — the channels exist, but the deposits don't happen.
 
@@ -163,7 +163,7 @@ Presenting all three channel proposals at once ("Here are the ADR draft, referen
 
 Retrospective is for *compounding artifacts* — durable deposits that lift future sessions. It is not for tutorial documentation, user-facing READMEs, or marketing copy. Those have their own homes.
 
-**The cure**: every retrospective deposit must answer "what does a *future forge session in this repo* benefit from knowing?" If the answer is "nothing — this is for external readers," reject.
+**The cure**: every retrospective deposit must answer "what does a *future powertasking session in this repo* benefit from knowing?" If the answer is "nothing — this is for external readers," reject.
 
 ---
 
@@ -171,11 +171,11 @@ Retrospective is for *compounding artifacts* — durable deposits that lift futu
 
 ### Multiple sessions of the same plan
 
-If `/forge docs/plans/<feature>.md` resumes a prior session, the Retrospective runs on the *completed-this-session* tasks, not the whole plan. The threshold checks compare against the project state, not the session boundary — if the prior session already deposited an ADR for this feature's architectural choice, this session does not propose a duplicate.
+If `/powertasking docs/plans/<feature>.md` resumes a prior session, the Retrospective runs on the *completed-this-session* tasks, not the whole plan. The threshold checks compare against the project state, not the session boundary — if the prior session already deposited an ADR for this feature's architectural choice, this session does not propose a duplicate.
 
-### Strike-caller integration
+### Resolve-issue-caller integration
 
-When `/forge` is invoked by `/strike`, the Retrospective still runs. Deposits proposed here are independent of the Notion status update strike performs after Finish. An ADR or reference deposit may happen even if the issue itself is rejected by the user during strike.
+When `/powertasking` is invoked by `/resolve-issue`, the Retrospective still runs. Deposits proposed here are independent of the Notion status update resolve-issue performs after Finish. An ADR or reference deposit may happen even if the issue itself is rejected by the user during resolve-issue.
 
 ### PROTOTYPE Discard
 
@@ -195,4 +195,4 @@ If no channel threshold is met, the phase exits with one line: "Retrospective: n
 
 ### Retrospective deposit causes Verify to need to re-run?
 
-It should not — Retrospective only writes to `docs/adr/`, `skills/forge/references/`, and `CONTEXT.md`. None of these affect lint/typecheck/test outcomes. If for some reason a deposit touches a file that does (e.g., a markdown linter is wired into the build), re-run Verify before Finish.
+It should not — Retrospective only writes to `docs/adr/`, `skills/powertasking/references/`, and `CONTEXT.md`. None of these affect lint/typecheck/test outcomes. If for some reason a deposit touches a file that does (e.g., a markdown linter is wired into the build), re-run Verify before Finish.

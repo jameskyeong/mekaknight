@@ -1,6 +1,6 @@
 # PLAN Routing Discipline — Plan Files as Contracts
 
-Reference for forge's **Route → PLAN** sub-step. The Route section of `SKILL.md` defines the surface mechanics (write a plan file, user confirms, docs checkpoint, sequential execution). This document is the deeper discipline — what makes a plan file actually executable, how to size tasks so each one is one TDD cycle, and what to do when the plan must change mid-flight.
+Reference for powertasking's **Route → PLAN** sub-step. The Route section of `SKILL.md` defines the surface mechanics (write a plan file, user confirms, docs checkpoint, sequential execution). This document is the deeper discipline — what makes a plan file actually executable, how to size tasks so each one is one TDD cycle, and what to do when the plan must change mid-flight.
 
 The non-negotiable: **a plan file is a contract, not a wish list.** It is the artifact the user confirmed and the artifact Build executes against. Vague tasks in the plan produce vague tests in Build; missing exit criteria produce "done" claims that nobody can verify.
 
@@ -11,7 +11,7 @@ The non-negotiable: **a plan file is a contract, not a wish list.** It is the ar
 DIRECT route handles small contained changes in one Build pass. PLAN exists for the next size up — work that touches multiple files, has internal task dependencies, or spans more time than can fit in a single uninterrupted session. The plan file is what makes that size of work survivable:
 
 - **It captures the agreed scope** in a form that does not depend on shared memory. The user confirmed this file; the Build phase executes this file; the Peer-review phase reads this file as the spec axis.
-- **It gives cross-session pickup a home.** When the session ends mid-execution, re-running `/forge <plan-file>` resumes from the first incomplete task. No "where were we" reconstruction.
+- **It gives cross-session pickup a home.** When the session ends mid-execution, re-running `/powertasking <plan-file>` resumes from the first incomplete task. No "where were we" reconstruction.
 - **It makes scope creep visible.** A plan file with an explicit "Out of scope" section converts scope creep from "the model just added this" to "the model added this contrary to the plan" — surfaceable and reviewable.
 - **It separates Decide from Do.** PLAN's first move is "write the plan and confirm." Build is downstream. The decision and the execution are different phases with different costs of error, and PLAN keeps them separated.
 
@@ -189,7 +189,7 @@ Build executes Task 3 and the test the plan named cannot be written, or fails fo
 
 ### Cross-session resume
 
-The session ends after Task 4. The user resumes hours or days later with `/forge docs/plans/<feature>.md`. The discipline:
+The session ends after Task 4. The user resumes hours or days later with `/powertasking docs/plans/<feature>.md`. The discipline:
 
 - Re-read the plan file as the source of truth.
 - Scan the working tree to detect which tasks have already been completed (test files exist, commits present).
@@ -223,7 +223,7 @@ If the sentence cannot be stated with the plan path, the user quote, and the opt
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Clarify** produces the Goal sentence and the constraint context that PLAN turns into tasks. Vague Clarify produces vague Goal, which produces tasks that cannot be sized — so the deepest source of plan-quality is Clarify-quality.
 - **Build** executes the plan task by task. The plan's per-task "Test" and "Verify" fields become Build's exit gate inputs. A plan with no Verify cannot have a clean Build exit.

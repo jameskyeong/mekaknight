@@ -1,6 +1,6 @@
 # Verification — Evidence Before Assertion
 
-Reference for forge's **cross-cutting verification gate** and every phase that ends in a completion claim. The gate in `SKILL.md` defines the surface rule (run the check, read the output, then state what passed). This document is the deeper discipline — why the rule exists, the subtle ways agents and humans break it without noticing, and what to do at each gate.
+Reference for powertasking's **cross-cutting verification gate** and every phase that ends in a completion claim. The gate in `SKILL.md` defines the surface rule (run the check, read the output, then state what passed). This document is the deeper discipline — why the rule exists, the subtle ways agents and humans break it without noticing, and what to do at each gate.
 
 The non-negotiable: **a completion claim is a statement about what you observed, not about what you expect.** Anything less is a confession of soft language — the model output equivalent of saying you went to the gym without actually going.
 
@@ -102,7 +102,7 @@ The cleanest version: structure subagent prompts to require evidence in the resp
 
 ## Per-phase verification commands
 
-Every forge phase has an exit gate. Here is what "evidence" looks like at each gate.
+Every powertasking phase has an exit gate. Here is what "evidence" looks like at each gate.
 
 ### Preflight
 - **What to verify:** git repo present, test runner detected, optional checkers noted.
@@ -196,7 +196,7 @@ The good version is longer. That is the point — the length is the evidence.
 
 ---
 
-## Relationship to forge's other phases
+## Relationship to powertasking's other phases
 
 - **Build's exit gate** is a verification gate. The TDD loop is not a substitute for verification — it is the engine that produces the evidence the verification gate then reads.
 - **Peer-review** reads the diff and may issue findings. Those findings themselves require verification before being marked resolved — "fixed" without re-running the tests is the same anti-pattern in miniature.
