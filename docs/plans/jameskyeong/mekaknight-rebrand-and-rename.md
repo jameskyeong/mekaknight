@@ -64,7 +64,7 @@
 - `docs/strategy/v2-vision.md`
 - `docs/strategy/jameskill-v2-handoff-*.md` — history 파일이라 본문은 그대로 두되 상단에 "[history — v1 명칭으로 작성됨]" 노트 추가
 - `docs/adr/0001-self-contained-orchestrator.md` — 본문 그대로, 상단에 "v1 명칭 사용" 노트
-- `docs/plans/temper-lite-orchestrator.md`, `harden-ship-ready-v0.1.md` — history 동일 처리
+- `docs/plans/jameskyeong/temper-lite-orchestrator.md`, `docs/plans/jameskyeong/harden-ship-ready-v0.1.md` — history 동일 처리
 - **신규**: `docs/adr/0002-mekaknight-rebrand.md` (이 결정 기록)
 
 ### E. v1.x 마이그레이션 안내

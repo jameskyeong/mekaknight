@@ -168,7 +168,7 @@ Run these checks and report results:
 
 > **Required reading at phase entry — one-question-at-a-time grilling, recommended-answer-with-reasoning patterns, deepened 5-category checklist, approach-proposal discipline, anti-patterns (shotgun questioning, vibes-based clarify, answering your own questions), and edge cases (premature skip, no CONTEXT.md, pushback fatigue) — see [`references/grilling.md`](references/grilling.md).**
 
-If invoked from `mekaknight:resolve-issue`, use the issue title + body as starting context. If invoked standalone, use whatever the user provided. If invoked with a path to an existing plan file (`docs/plans/*.md`), skip Clarify and Route — proceed directly to Build with that plan (cross-session pickup).
+If invoked from `mekaknight:resolve-issue`, use the issue title + body as starting context. If invoked standalone, use whatever the user provided. If invoked with a path to an existing plan file (`docs/plans/<github-id>/*.md`), skip Clarify and Route — proceed directly to Build with that plan (cross-session pickup).
 
 ### How to question
 
@@ -234,7 +234,12 @@ Proceed to **Build** immediately. No plan file, no docs checkpoint.
 
 #### PLAN.1: Write the plan file
 
-Generate a plan file at `docs/plans/<slug>.md` with this structure:
+Plans are filed per author: `docs/plans/<github-id>/<slug>.md`. Resolve `<github-id>` before writing:
+
+1. Run `gh api user --jq .login` — this returns the author's GitHub login (the "current github id").
+2. If `gh` is not installed or not authenticated (the command fails or returns empty), ask the user once: *"What's your GitHub id? Your plan files are filed under `docs/plans/<id>/`."*
+
+Create `docs/plans/<github-id>/` if it does not already exist (the first plan by a new author creates their directory), then generate the plan file at `docs/plans/<github-id>/<slug>.md` with this structure:
 
 ```markdown
 # Plan: <feature name>

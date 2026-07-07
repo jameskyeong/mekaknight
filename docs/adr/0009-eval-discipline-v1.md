@@ -36,4 +36,4 @@ mekaknight has been at `2.0.0-alpha.*` for multiple releases, and the most recen
 - `package.json` gains `scripts.eval` (developer-facing) and `scripts.prepublishOnly` (publish gate). `npm publish` now refuses to publish a failing build.
 - Every cross-cutting discipline added in the future (next to verification + communication-style) should land with at least one check module + one negative fixture so the rule is *enforced from day one*, not just documented.
 - Forge's Retrospective phase gains a new implicit channel: "did this session reveal a rule that should become a new eval check?" Not formalized in `SKILL.md` yet — revisitable if the pattern repeats.
-- v2 (headless session eval) remains open work. Tracked in `docs/plans/v2-launch-todo.md`. Not on the beta-blocking critical path; beta promotion is gated on v1 enforcement + outside dogfooding, per the alpha→beta path discussed during ADR drafting.
+- v2 (headless session eval) remains open work. Tracked in `docs/plans/jameskyeong/v2-launch-todo.md`. Not on the beta-blocking critical path; beta promotion is gated on v1 enforcement + outside dogfooding, per the alpha→beta path discussed during ADR drafting.

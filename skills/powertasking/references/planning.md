@@ -189,7 +189,7 @@ Build executes Task 3 and the test the plan named cannot be written, or fails fo
 
 ### Cross-session resume
 
-The session ends after Task 4. The user resumes hours or days later with `/powertasking docs/plans/<feature>.md`. The discipline:
+The session ends after Task 4. The user resumes hours or days later with `/powertasking docs/plans/<github-id>/<feature>.md`. The discipline:
 
 - Re-read the plan file as the source of truth.
 - Scan the working tree to detect which tasks have already been completed (test files exist, commits present).
@@ -213,7 +213,7 @@ The Route → PLAN exit gate per the SKILL.md table:
 
 In evidence form:
 
-> Plan written at `docs/plans/<slug>.md`. User confirmed at `<timestamp>`: "`<exact user quote>`."
+> Plan written at `docs/plans/<github-id>/<slug>.md`. User confirmed at `<timestamp>`: "`<exact user quote>`."
 
 If a docs checkpoint commit was made, the gate also records:
 

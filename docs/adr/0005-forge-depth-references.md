@@ -12,7 +12,7 @@ ADR 0001 chose self-containment over depth — `forge` would not depend on super
 
 ## Consequences
 
-- **First iteration scope is two modules.** `references/tdd-discipline.md` deepens the Build phase; `references/verification.md` deepens the cross-cutting verification gate. The plan file at `docs/plans/forge-depth-references-v1.md` records the exact scope and the explicit non-goals.
+- **First iteration scope is two modules.** `references/tdd-discipline.md` deepens the Build phase; `references/verification.md` deepens the cross-cutting verification gate. The plan file at `docs/plans/jameskyeong/forge-depth-references-v1.md` records the exact scope and the explicit non-goals.
 - **Ownership cost is real.** Every reference module is content the mekaknight repo now maintains. Upstream improvements in superpowers or Matt Pocock skills will not flow in automatically — we pull patterns we like through manual review and rewrite. This is the tradeoff ADR 0001 already accepted; the references just make the surface where the cost lives more explicit.
 - **The orchestrator stays slim.** `SKILL.md` does not duplicate reference content. The pointer lines are intentionally short — one sentence per reference, naming what the document covers. This preserves `SKILL.md`'s readability as an orchestration spec.
 - **Future iterations are additive, not restructuring.** Adding `references/grilling.md` does not change forge's phase structure or its existing references; it adds a new pointer at the Clarify phase. The same pattern applies to diagnosis, prototyping, architecture, planning, subagent patterns, peer review, and finishing.
@@ -22,4 +22,4 @@ ADR 0001 chose self-containment over depth — `forge` would not depend on super
 
 ## Status
 
-Active. First iteration (TDD + verification) ships with this ADR. Subsequent iterations are tracked as separate plans under `docs/plans/forge-depth-references-vN.md`.
+Active. First iteration (TDD + verification) ships with this ADR. Subsequent iterations are tracked as separate plans under `docs/plans/jameskyeong/forge-depth-references-vN.md`.

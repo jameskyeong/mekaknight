@@ -33,7 +33,7 @@ _Avoid_: tests (overlaps with code tests; eval discipline is for skill prose), l
 ### Positioning
 
 **Compound engineering**:
-The architectural principle — the second of mekaknight's two pillars alongside the **powertasking** orchestrator — that each session must deposit durable artifacts in the repo so future sessions start ahead. The five compounding channels and how they fill: **plan files** in `docs/plans/` (auto, PLAN route), **DIAGNOSE regression tests** in the test suite (auto, DIAGNOSE route), **ADRs** in `docs/adr/` (auto-prompted by Retrospective phase, Channel 1), **discipline references** in `skills/powertasking/references/` (auto-prompted by Retrospective, Channel 2), **CONTEXT.md** domain glossary (auto-prompted by Retrospective, Channel 3).
+The architectural principle — the second of mekaknight's two pillars alongside the **powertasking** orchestrator — that each session must deposit durable artifacts in the repo so future sessions start ahead. The five compounding channels and how they fill: **plan files** in `docs/plans/<github-id>/` (auto, PLAN route), **DIAGNOSE regression tests** in the test suite (auto, DIAGNOSE route), **ADRs** in `docs/adr/` (auto-prompted by Retrospective phase, Channel 1), **discipline references** in `skills/powertasking/references/` (auto-prompted by Retrospective, Channel 2), **CONTEXT.md** domain glossary (auto-prompted by Retrospective, Channel 3).
 
 The term is **not mekaknight's coinage** — EveryInc's [compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) is the dominant claim-holder in the Claude Code ecosystem (37 skills, "Official Compound Engineering plugin"). mekaknight ships an architectural variant: same principle (cross-session artifact deposit so the codebase gets easier to work in), bundled into a single self-contained orchestrator rather than a multi-skill suite the user composes. EveryInc's channels (STRATEGY.md, brainstorms, pulse-reports, code-review patterns, implementation plans) overlap in spirit with ours but are organized differently. See [ADR 0008](docs/adr/0008-compound-engineering-positioning.md) for the positioning decision.
 
@@ -47,7 +47,7 @@ A **powertasking** routing decision for small, contained changes (1-4 commits, t
 _Avoid_: simple, small (subjective)
 
 **PLAN**:
-A **powertasking** routing decision for medium-scope features (5-15 commits, 2-4 files with shared state). Produces a plan file in `docs/plans/` before sequential task execution.
+A **powertasking** routing decision for medium-scope features (5-15 commits, 2-4 files with shared state). Produces a plan file in `docs/plans/<github-id>/` before sequential task execution.
 _Avoid_: roadmap, spec (different things)
 
 **DIAGNOSE**:

@@ -1,7 +1,7 @@
 # mekaknight v2.0 — Roadmap
 
 > ~1-2주 finishing touches 후 출시. 새로운 코드 작업 없음 — 문서·마케팅 정렬 + 데모만.
-> 피벗 근거: `docs/adr/0004-narrow-v2-to-forge-and-tracker.md`. 상세 계획: `docs/plans/v2-narrow-pivot.md`.
+> 피벗 근거: `docs/adr/0004-narrow-v2-to-forge-and-tracker.md`. 상세 계획: `docs/plans/jameskyeong/v2-narrow-pivot.md`.
 > ADR 0003 (lite-wrap)은 superseded. v2.0 surface는 forge + tracker로 좁혀졌고, lock + launch는 alpha utilities로 마케팅 surface 밖에 둠.
 
 ## 핵심 원칙

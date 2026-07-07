@@ -171,7 +171,7 @@ Retrospective is for *compounding artifacts* — durable deposits that lift futu
 
 ### Multiple sessions of the same plan
 
-If `/powertasking docs/plans/<feature>.md` resumes a prior session, the Retrospective runs on the *completed-this-session* tasks, not the whole plan. The threshold checks compare against the project state, not the session boundary — if the prior session already deposited an ADR for this feature's architectural choice, this session does not propose a duplicate.
+If `/powertasking docs/plans/<github-id>/<feature>.md` resumes a prior session, the Retrospective runs on the *completed-this-session* tasks, not the whole plan. The threshold checks compare against the project state, not the session boundary — if the prior session already deposited an ADR for this feature's architectural choice, this session does not propose a duplicate.
 
 ### Resolve-issue-caller integration
 

@@ -120,7 +120,7 @@ Every powertasking phase has an exit gate. Here is what "evidence" looks like at
 - **What to verify:** the user confirmed the plan file's contents.
 - **Evidence pattern:** path to the plan file; quote the user's confirmation.
 - **Forbidden:** "the plan looks reasonable."
-- **Acceptable:** "Plan written at `docs/plans/<slug>.md`. User confirmed: 'good, go ahead.'"
+- **Acceptable:** "Plan written at `docs/plans/<github-id>/<slug>.md`. User confirmed: 'good, go ahead.'"
 
 ### Build (per task)
 - **What to verify:** the failing test now passes; previously-passing tests still pass.

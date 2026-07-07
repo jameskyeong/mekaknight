@@ -41,7 +41,7 @@ Each `/powertasking` session deposits durable artifacts in your repo so future s
 
 | Channel | How powertasking deposits | What compounds |
 |---|---|---|
-| **Plan files** | Auto — PLAN route writes `docs/plans/<feature>.md` | Resumable contracts. `/powertasking docs/plans/<feature>.md` re-enters from the first incomplete task across sessions. |
+| **Plan files** | Auto — PLAN route writes `docs/plans/<github-id>/<feature>.md` | Resumable contracts. `/powertasking docs/plans/<github-id>/<feature>.md` re-enters from the first incomplete task across sessions. |
 | **Regression tests** | Auto — DIAGNOSE route adds the *minimized* reproduction test to the suite permanently | Bugs compound into protection. The net grows with every fix. |
 | **ADRs** | Auto-prompted — **Retrospective phase** proposes an ADR when an architectural choice was made | Decision history accumulates in `docs/adr/`. Future sessions know *why*. |
 | **Discipline references** | Auto-prompted — Retrospective proposes a `references/<phase>.md` append when a new failure mode surfaces | In-repo, editable discipline that grows with the project. Not vendor-locked. |
@@ -66,7 +66,7 @@ After Clarify, powertasking picks **one** route based on the kind of work. Each 
 
 ### Flexible entry & resume
 
-- **Resume mid-flow** — `/powertasking docs/plans/<feature>.md` re-enters the plan, skips Clarify+Route, picks up from the first incomplete task.
+- **Resume mid-flow** — `/powertasking docs/plans/<github-id>/<feature>.md` re-enters the plan, skips Clarify+Route, picks up from the first incomplete task.
 - **Skip Clarify** — say "skip clarify" or "requirements are clear" when you've already specced the work.
 - **Called from `/resolve-issue`** — the Notion issue title + body seeds Clarify automatically.
 

@@ -48,7 +48,7 @@ If you are auditing a completed `/powertasking` run, the relevant module is the 
 
 ## Future modules
 
-Tracked in `docs/plans/forge-depth-references-vN.md`. Currently open:
+Tracked in `docs/plans/jameskyeong/forge-depth-references-vN.md`. Currently open:
 
 - `architecture.md` — gated on a decision to promote PRD-scale architecture work to a supported route. ADR 0006 rejected ARCHITECT for v2.0 because PRD-level work overlaps with the existing tracker (`/resolve-issue`, `/report-issue`) and exceeds powertasking's single-session responsibility scope. Revisitable if post-launch usage signals demand.
 

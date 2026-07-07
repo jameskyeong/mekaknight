@@ -17,7 +17,7 @@ ADR 0003 pivoted mekaknight v2.0 from a 16-week deep build to a 6-8 week lite, w
 - **Marketing pitch shifts** from "production-readiness gate" to **"a development orchestrator that knows when to slow down, plus an issue tracker that reads like a problem statement"** — the v1 value, sharpened.
 - **Dogfooding becomes natural**: forge is what the author uses to build features; the tracker is what the author uses to manage them. Twitter / demo content writes itself from real usage rather than synthetic security checks.
 - **v2.1+ revisit**: if post-launch users ask for production-readiness work, lock + launch are already in place to grow. If they don't, the surfaces age out gracefully.
-- **ADR 0003 is superseded** by this decision; the lite-wrap plan in `docs/plans/v2-lite-pivot.md` is retired (kept as historical record of the path considered).
+- **ADR 0003 is superseded** by this decision; the lite-wrap plan in `docs/plans/jameskyeong/v2-lite-pivot.md` is retired (kept as historical record of the path considered).
 - **docs that must be updated**: README.md, CONTEXT.md, v2-roadmap.md, v2-skill-catalog.md, v2-vision.md, v2-marketing.md — all need re-alignment to the narrowed v2.0 surface.
 - The "vibe coding" marketing angle softens — without lock/launch as the lead, "vibe coding" is no longer the central audience cue. v2.0 audience is "developers who want a disciplined Claude Code workflow and a humane issue tracker".
 

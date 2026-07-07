@@ -1,7 +1,7 @@
 # Plan — v2.0 narrow pivot (forge + tracker only, ~1-2 weeks)
 
 > **Decision**: ADR 0004 — narrow v2.0 to forge + tracker; defer lock + launch
-> **Supersedes**: `docs/plans/v2-lite-pivot.md` (B / wrap pivot — retired as historical record)
+> **Supersedes**: `docs/plans/jameskyeong/v2-lite-pivot.md` (B / wrap pivot — retired as historical record)
 > **Basis**: wrap layer still requires external tools the author doesn't use; v2.0 ships only what's dogfooded daily
 > **Target ship**: ~1-2 weeks from today
 
@@ -86,7 +86,7 @@ The dogfooding question that destabilized B (lock had 0 BLOCK across 3 codebases
 - docs/strategy/v2-skill-catalog.md (lock + launch → "alpha utilities" / "deferred")
 - docs/strategy/v2-vision.md (tagline shift)
 - docs/strategy/v2-marketing.md (pitch shift)
-- docs/plans/v2-lite-pivot.md — leave intact as historical record; add a top-of-file note pointing to this plan as the successor
+- docs/plans/jameskyeong/v2-lite-pivot.md — leave intact as historical record; add a top-of-file note pointing to this plan as the successor
 
 ## 8. Next action
 

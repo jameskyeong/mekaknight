@@ -1,7 +1,7 @@
 # mekaknight v2.0 — Skill Catalog
 
 > v2.0 surface 분해. narrow pivot 후 (ADR 0004) **forge가 리드**, tracker (link/tag/strike)가 2차 리드. lock + launch는 invocable한 채로 남되 **marketing surface 밖 alpha utilities**로 분류.
-> 피벗 근거: `docs/adr/0004-narrow-v2-to-forge-and-tracker.md`. 상세: `docs/plans/v2-narrow-pivot.md`.
+> 피벗 근거: `docs/adr/0004-narrow-v2-to-forge-and-tracker.md`. 상세: `docs/plans/jameskyeong/v2-narrow-pivot.md`.
 
 ## 구조 요약 (v2.0)
 
